@@ -40,6 +40,8 @@
     "not ie <= 10"
   ],
   "dependencies": {
+    "@commitlint/cli": "^16.0.2",
+    "@commitlint/config-conventional": "^16.0.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "windicss-webpack-plugin": "^1.6.2"

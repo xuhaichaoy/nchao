@@ -13,7 +13,7 @@ function Home() {
         <Image
           className="ml-auto mr-auto"
           src="/images/logo.png"
-          alt="123123"
+          alt="123123222111"
         />
         <span>⚡ Electron ⚡</span>
         <span>+</span>

@@ -1,3 +1,4 @@
+const path = require("path");
 const WindiCSSWebpackPlugin = require("windicss-webpack-plugin");
 
 module.exports = {
@@ -11,5 +12,13 @@ module.exports = {
     }
 
     return config;
+  },
+  images: {
+    domains: ["pay-test-passport.66rpg.com"],
+    loader: "imgix",
+    path: "https://pay-test-www.66rpg.com",
+  },
+  sassOptions: {
+    includePaths: [path.join(__dirname, "renderer/styles")],
   },
 };

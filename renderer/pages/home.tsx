@@ -14,6 +14,8 @@ function Home() {
           className="ml-auto mr-auto"
           src="/images/logo.png"
           alt="123123222111"
+          width={50}
+          height={50}
         />
         <span>⚡ Electron ⚡</span>
         <span>+</span>

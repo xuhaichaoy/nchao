@@ -10,13 +10,15 @@ function Home() {
         <title>Home - Nextron (with-typescript-tailwindcss)</title>
       </Head>
       <div className="grid grid-col-1 text-2xl w-full text-center">
-        <Image
-          className="ml-auto mr-auto"
-          src="/images/logo.png"
-          alt="123123222111"
-          width={50}
-          height={50}
-        />
+        <div className="w-[200px] ml-auto mr-auto">
+          <Image
+            className="block"
+            src="/images/logo.png"
+            alt="123123222111"
+            width={100}
+            height={100}
+          />
+        </div>
         <span>⚡ Electron ⚡</span>
         <span>+</span>
         <span>Next.js</span>

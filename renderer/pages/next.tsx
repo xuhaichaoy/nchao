@@ -10,14 +10,15 @@ function Next() {
         <title>Next - Nextron (with-typescript-tailwindcss)</title>
       </Head>
       <div className="grid grid-col-1 text-2xl w-full text-center">
-        {/* <img className='ml-auto mr-auto' src='/images/logo.png' /> */}
-        <Image
-          className="ml-auto mr-auto"
-          src="/images/logo.png"
-          alt="123123"
-          width={50}
-          height={50}
-        />
+        <div className="mr-auto ml-auto w-[200px]">
+          <Image
+            className="ml-auto mr-auto block"
+            src="/images/logo.png"
+            alt="123123"
+            width={100}
+            height={100}
+          />
+        </div>
         <span>⚡ Nextro1111n ⚡</span>
       </div>
       <div className="mt-1 w-full flex-wrap flex justify-center">

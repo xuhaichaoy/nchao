@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Image from "next/image";
 import Link from 'next/link';
 
 function Next() {
@@ -9,7 +10,12 @@ function Next() {
         <title>Next - Nextron (with-typescript-tailwindcss)</title>
       </Head>
       <div className='grid grid-col-1 text-2xl w-full text-center'>
-        <img className='ml-auto mr-auto' src='/images/logo.png' />
+        {/* <img className='ml-auto mr-auto' src='/images/logo.png' /> */}
+        <Image
+          className="ml-auto mr-auto"
+          src="/images/logo.png"
+          alt="123123"
+        />
         <span>⚡ Nextro1111n ⚡</span>
       </div>
       <div className='mt-1 w-full flex-wrap flex justify-center'>

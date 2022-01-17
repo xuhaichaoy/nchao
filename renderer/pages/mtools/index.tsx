@@ -1,8 +1,11 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import styles from "../../styles/mtools/index.module.scss";
+import { nativeImage } from "electron";
 import Image from "next/image";
+import fileLists from "../../utils/win";
 import type { searchItem } from "../../type/mtools/index";
+import { useAsyncEffect } from "../../utils/index";
 
 const arr: searchItem[] = [
   {
@@ -120,8 +123,13 @@ const Home: NextPage = () => {
     });
 
   useEffect(() => {
+    console.log(fileLists());
     console.log(123123123);
   }, []);
+
+  // useAsyncEffect(() => {
+  //   console.log(1111)
+  // }, [])
 
   return (
     <div className={`p-4`}>

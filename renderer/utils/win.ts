@@ -4,7 +4,7 @@ import path from "path";
 import os from "os";
 import translate from "./translate";
 import { shell } from "electron";
-import fileIcon from "extract-file-icon";
+// import fileIcon from "extract-file-icon";
 
 // const fileIcon = require("extract-file-icon");
 
@@ -23,6 +23,7 @@ const fileLists: any = [];
 const isZhRegex = /[\u4e00-\u9fa5]/;
 
 const icondir = path.join(os.tmpdir(), "ProcessIcon");
+console.log(icondir);
 const exists = fs.existsSync(icondir);
 if (!exists) {
   fs.mkdirSync(icondir);

@@ -14,7 +14,7 @@ module.exports = {
     return config;
   },
   images: {
-    domains: ["pay-test-passport.66rpg.com"],
+    // domains: ["pay-test-passport.66rpg.com"],
     loader: "imgix",
     path: "https://pay-test-www.66rpg.com",
   },

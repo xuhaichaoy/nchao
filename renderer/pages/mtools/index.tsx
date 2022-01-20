@@ -1,28 +1,14 @@
 import type { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
 import styles from "../../styles/mtools/index.module.scss";
-// import { nativeImage } from "electron";
 import Image from "next/image";
-// import fileLists from "../../utils/win";
 import type { searchItem } from "../../type/mtools/index";
-import { useAsyncEffect } from "../../utils/index";
 import { ipcRenderer } from "electron";
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [arrData, setArrData] = useState<searchItem[]>([]);
   const [checkValue, setCheckValue] = useState(0);
-  const [local, setLocal] = useState([]);
-  const [app, setApp] = useState({
-    appList: [],
-    plugins: [],
-    localPlugins: [],
-    currentPlugin: {},
-    pluginLoading: false,
-  });
-
-  const appList = useRef<any>(null);
-
   const scrollItem = useRef<any>(null);
 
   const handleSearch = ({ target }: any) => {
@@ -37,7 +23,6 @@ const Home: NextPage = () => {
 
   const keyDown = (e) => {
     const { keyCode } = e;
-
     switch (keyCode) {
       case 13:
         handleClick(arrData[checkValue]);
@@ -47,8 +32,8 @@ const Home: NextPage = () => {
         break;
 
       case 38:
+        // Up
         e.preventDefault();
-
         if (checkValue === 0) {
           if (arrData.length - 1 > 10) {
             setCheckValue(9);
@@ -61,6 +46,7 @@ const Home: NextPage = () => {
         break;
 
       case 40:
+        // Down
         e.preventDefault();
         if (checkValue === arrData.length - 1) {
           setCheckValue(0);
@@ -92,13 +78,13 @@ const Home: NextPage = () => {
           onClick={() => handleClick(item)}
         >
           <div className={`flex justify-left items-center w-[100%]`}>
-            {/* <Image
+            <Image
               className={`rounded-md`}
               src={"files://" + item.icon || ""}
               width={50}
               height={50}
               alt="icon"
-            /> */}
+            />
             <div
               className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
             >
@@ -116,7 +102,7 @@ const Home: NextPage = () => {
     });
 
   useEffect(() => {
-    ipcRenderer.on("getSearchValue", (event, arg) => {
+    ipcRenderer.on("getSearchValue", (_event, arg) => {
       setArrData(arg || []);
     });
   }, []);

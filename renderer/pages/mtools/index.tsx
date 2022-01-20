@@ -23,9 +23,28 @@ const Home: NextPage = () => {
     ipcRenderer.send("handleSearchValue", target.value);
   };
 
+  const Up = () => {
+    if (checkValue === 0) {
+      if (arrData.length - 1 > 10) {
+        setCheckValue(9);
+      } else {
+        setCheckValue(arrData.length - 1);
+      }
+    } else {
+      setCheckValue((item) => item - 1);
+    }
+  };
+
+  const Down = () => {
+    if (checkValue === arrData.length - 1) {
+      setCheckValue(0);
+    } else {
+      setCheckValue((item) => item + 1);
+    }
+  };
+
   const keyDown = (e) => {
     const { keyCode, altKey } = e;
-    console.log(keyCode, altKey);
     if (altKey) {
       // alt 按下
       e.preventDefault();
@@ -44,25 +63,13 @@ const Home: NextPage = () => {
       case 38:
         // Up
         e.preventDefault();
-        if (checkValue === 0) {
-          if (arrData.length - 1 > 10) {
-            setCheckValue(9);
-          } else {
-            setCheckValue(arrData.length - 1);
-          }
-        } else {
-          setCheckValue((item) => item - 1);
-        }
+        Up();
         break;
 
       case 40:
         // Down
         e.preventDefault();
-        if (checkValue === arrData.length - 1) {
-          setCheckValue(0);
-        } else {
-          setCheckValue((item) => item + 1);
-        }
+        Down();
         break;
 
       default:
@@ -139,6 +146,18 @@ const Home: NextPage = () => {
       );
     });
 
+  const handleScroll = (e) => {
+    e.preventDefault();
+    console.log(e);
+    if (e.deltaY < 0) {
+      // up
+      console.log(1111);
+    } else {
+      // down
+      console.log(2222);
+    }
+  };
+
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
       setArrData(arg || []);
@@ -148,13 +167,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     scrollItem.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
   }, [checkValue]);
-
-  // useEffect(() => {
-  //   if(altKey) {
-
-  //   }
-
-  // }, [altKey])
 
   return (
     <div className={`p-4`}>
@@ -182,7 +194,8 @@ const Home: NextPage = () => {
       </div>
 
       <div
-        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto ${styles.bg}`}
+        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto ${styles.bg} scrollContent`}
+        onWheel={handleScroll}
       >
         {gerenateSearchItem()}
       </div>

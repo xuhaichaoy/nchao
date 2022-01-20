@@ -10,6 +10,7 @@ const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [arrData, setArrData] = useState<searchItem[]>([]);
   const [checkValue, setCheckValue] = useState(0);
+  const [altKey, setAltKey] = useState(false);
   const scrollItem = useRef<any>(null);
 
   const handleSearch = ({ target }: any) => {
@@ -23,7 +24,15 @@ const Home: NextPage = () => {
   };
 
   const keyDown = (e) => {
-    const { keyCode } = e;
+    const { keyCode, altKey } = e;
+    console.log(keyCode, altKey);
+    if (altKey) {
+      // alt 按下
+      e.preventDefault();
+      setAltKey(true);
+    } else {
+      setAltKey(false);
+    }
     switch (keyCode) {
       case 13:
         handleClick(arrData[checkValue]);
@@ -61,6 +70,19 @@ const Home: NextPage = () => {
     }
   };
 
+  const keyUp = (e) => {
+    const { keyCode, altKey } = e;
+
+    switch (keyCode) {
+      case 18:
+        setAltKey(false);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const handleClick = (item) => {
     ipcRenderer.send("handleOpenVlaue", item);
     setSearchValue("");
@@ -86,13 +108,21 @@ const Home: NextPage = () => {
               height={50}
               alt="icon"
             /> */}
-            <img
-              className={`rounded-md mr-[6px]`}
-              src={item.icon || ""}
-              width={36}
-              height={36}
-              alt="icon"
-            />
+            {!altKey ? (
+              <img
+                className={`rounded-md mr-[6px]`}
+                src={item.icon || ""}
+                width={36}
+                height={36}
+                alt="icon"
+              />
+            ) : (
+              <div
+                className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center`}
+              >
+                {index + 1}
+              </div>
+            )}
             <div
               className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
             >
@@ -119,6 +149,13 @@ const Home: NextPage = () => {
     scrollItem.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
   }, [checkValue]);
 
+  // useEffect(() => {
+  //   if(altKey) {
+
+  //   }
+
+  // }, [altKey])
+
   return (
     <div className={`p-4`}>
       <div
@@ -131,6 +168,7 @@ const Home: NextPage = () => {
           spellCheck={false}
           onChange={handleSearch}
           onKeyDown={keyDown}
+          onKeyUp={keyUp}
         />
         <div className={`flex items-center w-px-10px w-[50px]`}>
           <Image

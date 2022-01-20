@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
 import styles from "../../styles/mtools/index.module.scss";
@@ -78,11 +79,18 @@ const Home: NextPage = () => {
           onClick={() => handleClick(item)}
         >
           <div className={`flex justify-left items-center w-[100%]`}>
-            <Image
+            {/* <Image
               className={`rounded-md`}
-              src={"files://" + item.icon || ""}
+              src={item.icon || ""}
               width={50}
               height={50}
+              alt="icon"
+            /> */}
+            <img
+              className={`rounded-md mr-[6px]`}
+              src={item.icon || ""}
+              width={36}
+              height={36}
               alt="icon"
             />
             <div

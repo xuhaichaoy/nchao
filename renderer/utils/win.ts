@@ -4,6 +4,7 @@ import path from "path";
 import os from "os";
 import translate from "./translate";
 import { shell } from "electron";
+import fileIcon from "extract-file-icon";
 
 const filePath = path.resolve(
   "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
@@ -28,16 +29,17 @@ if (!exists) {
 
 const getico = (app) => {
   try {
-    // console.log(fileIcon)
-    // const buffer = fileIcon(app.desc, 32);
-    // const iconpath = path.join(icondir, `${app.name}.png`);
-    // fs.exists(iconpath, (exists) => {
-    //   if (!exists) {
-    //     fs.writeFile(iconpath, buffer, "base64", () => {
-    //       //
-    //     });
-    //   }
-    // });
+    console.log(fileIcon);
+    const buffer = fileIcon(app.desc, 32);
+    const iconpath = path.join(icondir, `${app.name}.png`);
+    console.log(iconpath);
+    fs.exists(iconpath, (exists) => {
+      if (!exists) {
+        fs.writeFile(iconpath, buffer, "base64", () => {
+          //
+        });
+      }
+    });
   } catch (e) {
     console.log(e, app.desc);
   }

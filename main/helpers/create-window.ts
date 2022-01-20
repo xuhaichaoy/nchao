@@ -82,6 +82,7 @@ export default (
     ...options,
     ...state,
     webPreferences: {
+      webSecurity: false,
       nodeIntegration: true,
       contextIsolation: false,
       ...options.webPreferences,

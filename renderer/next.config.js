@@ -15,7 +15,7 @@ module.exports = {
   },
   images: {
     // domains: ["pay-test-passport.66rpg.com"],
-    loader: "imgix",
+    // loader: "imgix",
     path: "https://pay-test-www.66rpg.com",
   },
   sassOptions: {

@@ -12,6 +12,7 @@
     "prettier": "prettier -c --write \"src/**/*\"",
     "lint": "next lint && npm run lint:js && npm run lint:style && npm run lint:prettier",
     "commit": "git cz",
+    "download": "just install",
     "commitlint": "commitlint --config commitlint.config.js -e -V",
     "lint-staged:js": "eslint --ext .js,.jsx,.ts,.tsx ",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src && npm run lint:style",
@@ -42,9 +43,12 @@
   "dependencies": {
     "@commitlint/cli": "^16.0.2",
     "@commitlint/config-conventional": "^16.0.0",
+    "download": "^8.0.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
+    "just-scripts": "^1.6.1",
     "sass": "^1.48.0",
+    "sqlite3": "^5.0.2",
     "windicss-webpack-plugin": "^1.6.2"
   },
   "devDependencies": {

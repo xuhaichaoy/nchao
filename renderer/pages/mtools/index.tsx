@@ -3,92 +3,14 @@ import { useEffect, useState, useRef } from "react";
 import styles from "../../styles/mtools/index.module.scss";
 // import { nativeImage } from "electron";
 import Image from "next/image";
-import fileLists from "../../utils/win";
+// import fileLists from "../../utils/win";
 import type { searchItem } from "../../type/mtools/index";
 import { useAsyncEffect } from "../../utils/index";
-
-// const arr: searchItem[] = [
-//   {
-//     id: 1,
-//     tips: "12312312313",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "12312312311111111111",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 2,
-//     tips: "1111111111111",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123a",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 3,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 4,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 5,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 6,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 7,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 8,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 9,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 10,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-//   {
-//     id: 11,
-//     tips: "3333333333",
-//     imgIcon: "/user/avatar?uid=59155681&size=big",
-//     name: "123123123d",
-//     path: "asdasdas/asdasd/asdasd",
-//   },
-// ];
+import { ipcRenderer } from "electron";
 
 const Home: NextPage = () => {
   const [arrData, setArrData] = useState<searchItem[]>([]);
+  const [local, setLocal] = useState([]);
   const [app, setApp] = useState({
     appList: [],
     plugins: [],
@@ -104,15 +26,12 @@ const Home: NextPage = () => {
       setArrData([]);
       return;
     }
-    const res = appList.current.filter((item) => {
-      if (item && item?.name?.includes(target.value)) {
-        return item;
-      }
-      return "";
-    });
-    console.log(res);
 
-    setArrData(res);
+    ipcRenderer.send("asynchronous-message", target.value);
+  };
+
+  const handleClick = (item) => {
+    console.log(item);
   };
 
   const gerenateSearchItem = () =>
@@ -120,7 +39,8 @@ const Home: NextPage = () => {
       return (
         <div
           className={`h-16 flex justify-between items-center`}
-          key={item.desc}
+          key={item.id}
+          onClick={() => handleClick(item)}
         >
           <div className={`flex justify-center items-center`}>
             {/* <Image
@@ -146,27 +66,10 @@ const Home: NextPage = () => {
       );
     });
 
-  const changeCorptype = (arr, corptype) => {
-    const res = new Map();
-    arr.filter(
-      (x) =>
-        x.CORPTYPE == corptype &&
-        !res.has(x.SCOMPANYNAME) &&
-        res.set(x.SCOMPANYNAME, 1)
-    );
-    return arr;
-  };
-
   useEffect(() => {
-    // console.log(fileLists());
-    // console.log(123123123);
-  }, []);
-
-  useAsyncEffect(async () => {
-    const data = await fileLists();
-    const a = changeCorptype(data, "desc");
-    console.log(a);
-    appList.current = data;
+    ipcRenderer.on("asynchronous-reply", (event, arg) => {
+      setArrData(arg || []);
+    });
   }, []);
 
   return (

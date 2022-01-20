@@ -3,11 +3,17 @@ import {
   screen,
   BrowserWindow,
   BrowserWindowConstructorOptions,
-} from 'electron';
-import Store from 'electron-store';
+  ipcMain,
+} from "electron";
+import Store from "electron-store";
+// import '../sqlite'
+import "./event";
 
-export default (windowName: string, options: BrowserWindowConstructorOptions): BrowserWindow => {
-  const key = 'window-state';
+export default (
+  windowName: string,
+  options: BrowserWindowConstructorOptions
+): BrowserWindow => {
+  const key = "window-state";
   const name = `window-state-${windowName}`;
   const store = new Store({ name });
   const defaultSize = {
@@ -18,6 +24,10 @@ export default (windowName: string, options: BrowserWindowConstructorOptions): B
   let win;
 
   const restore = () => store.get(key, defaultSize);
+
+  ipcMain.on("MainProgress", function (e, argMsg) {
+    console.log(argMsg);
+  });
 
   const getCurrentPosition = () => {
     const position = win.getPosition();
@@ -47,8 +57,8 @@ export default (windowName: string, options: BrowserWindowConstructorOptions): B
     });
   };
 
-  const ensureVisibleOnSomeDisplay = windowState => {
-    const visible = screen.getAllDisplays().some(display => {
+  const ensureVisibleOnSomeDisplay = (windowState) => {
+    const visible = screen.getAllDisplays().some((display) => {
       return windowWithinBounds(windowState, display.bounds);
     });
     if (!visible) {
@@ -79,7 +89,7 @@ export default (windowName: string, options: BrowserWindowConstructorOptions): B
   };
   win = new BrowserWindow(browserOptions);
 
-  win.on('close', saveState);
+  win.on("close", saveState);
 
   return win;
 };

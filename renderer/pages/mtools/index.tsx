@@ -63,6 +63,7 @@ const Home: NextPage = () => {
       case 38:
         // Up
         e.preventDefault();
+        5;
         Up();
         break;
 

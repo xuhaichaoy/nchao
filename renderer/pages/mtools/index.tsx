@@ -148,7 +148,6 @@ const Home: NextPage = () => {
     });
 
   const handleScroll = (e) => {
-    e.preventDefault();
     console.log(e);
     if (e.deltaY < 0) {
       // up

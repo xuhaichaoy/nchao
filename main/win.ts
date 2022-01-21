@@ -23,7 +23,6 @@ const fileLists: any = [];
 const isZhRegex = /[\u4e00-\u9fa5]/;
 
 const icondir = path.join(os.tmpdir(), "ProcessIcon");
-console.log(icondir);
 const exists = fs.existsSync(icondir);
 if (!exists) {
   fs.mkdirSync(icondir);
@@ -31,7 +30,6 @@ if (!exists) {
 
 const getico = (app) => {
   try {
-    console.log(fileIcon);
     const buffer = fileIcon(app.desc, 32);
     const iconpath = path.join(icondir, `${app.name}.png`);
     fs.exists(iconpath, (exists) => {

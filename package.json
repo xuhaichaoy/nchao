@@ -50,6 +50,7 @@
     "just-scripts": "^1.6.1",
     "sass": "^1.48.0",
     "sqlite3": "^5.0.2",
+    "swiper": "^7.4.1",
     "windicss-webpack-plugin": "^1.6.2"
   },
   "devDependencies": {

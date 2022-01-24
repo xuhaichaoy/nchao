@@ -1,10 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
-import styles from "../../styles/mtools/index.module.scss";
 import Image from "next/image";
 import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Mousewheel, Scrollbar } from "swiper";
+import "swiper/css";
+import "swiper/css/scrollbar";
+
+SwiperCore.use([Mousewheel, Scrollbar]);
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -12,6 +17,9 @@ const Home: NextPage = () => {
   const [checkValue, setCheckValue] = useState(0);
   const [altKey, setAltKey] = useState(false);
   const scrollItem = useRef<any>(null);
+  const swiperInstance = useRef<any>(null);
+  const [iskeyDown, setIskeyDown] = useState(false);
+  const [scrollLock, setScrollLock] = useState(false);
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);
@@ -38,12 +46,14 @@ const Home: NextPage = () => {
   const Down = () => {
     if (checkValue === arrData.length - 1) {
       setCheckValue(0);
+      swiperInstance.current.slideTo(0, 0, false);
     } else {
       setCheckValue((item) => item + 1);
     }
   };
 
   const keyDown = (e) => {
+    setIskeyDown(true);
     const { keyCode, altKey } = e;
     if (altKey) {
       // alt 按下
@@ -56,6 +66,7 @@ const Home: NextPage = () => {
       case 13:
         handleClick(arrData[checkValue]);
         break;
+
       case 32:
         handleClick(arrData[checkValue]);
         break;
@@ -63,7 +74,6 @@ const Home: NextPage = () => {
       case 38:
         // Up
         e.preventDefault();
-        5;
         Up();
         break;
 
@@ -89,6 +99,8 @@ const Home: NextPage = () => {
       default:
         break;
     }
+
+    setIskeyDown(false);
   };
 
   const handleClick = (item) => {
@@ -97,75 +109,88 @@ const Home: NextPage = () => {
     setArrData([]);
   };
 
+  const slideChange = (swiper) => {
+    if (scrollLock) {
+      setScrollLock(false);
+      return;
+    }
+
+    if (checkValue < swiperInstance.current.activeIndex) {
+      setCheckValue(swiper.activeIndex);
+    }
+    if (checkValue >= swiperInstance.current.activeIndex + 10) {
+      setCheckValue(swiper.activeIndex + 9);
+    }
+  };
+
   const gerenateSearchItem = () =>
     arrData.map((item: any, index: number) => {
       return (
-        <div
-          ref={checkValue === index ? scrollItem : null}
-          className={`h-[60px] flex px-4 justify-between items-center  ${
-            checkValue === index ? "bg-gray-300 checked" : ""
-          }`}
-          key={item.id}
-          onClick={() => handleClick(item)}
-        >
-          <div className={`flex justify-left items-center w-[100%]`}>
-            {/* <Image
+        <SwiperSlide key={item.id}>
+          <div
+            ref={checkValue === index ? scrollItem : null}
+            className={`h-[60px] w-[100%] text-left flex px-4 justify-between items-center  ${
+              checkValue === index ? "bg-gray-300 checked" : ""
+            }`}
+            key={item.id}
+            onClick={() => handleClick(item)}
+          >
+            <div className={`flex justify-left items-center w-[100%]`}>
+              {/* <Image
               className={`rounded-md`}
               src={item.icon || ""}
               width={50}
               height={50}
               alt="icon"
             /> */}
-            {!altKey ? (
-              <img
-                className={`rounded-md mr-[6px]`}
-                src={item.icon || ""}
-                width={36}
-                height={36}
-                alt="icon"
-              />
-            ) : (
+              {!altKey ? (
+                <img
+                  className={`rounded-md mr-[6px]`}
+                  src={item.icon || ""}
+                  width={36}
+                  height={36}
+                  alt="icon"
+                />
+              ) : (
+                <div
+                  className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center`}
+                >
+                  {index + 1}
+                </div>
+              )}
               <div
-                className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center`}
+                className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
               >
-                {index + 1}
+                <span className={`flex-shrink-1 w-[100%]`}>{item.name}</span>
+                <span
+                  className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
+                >
+                  {item.desc}
+                </span>
               </div>
-            )}
-            <div
-              className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
-            >
-              <span className={`flex-shrink-1 w-[100%]`}>{item.name}</span>
-              <span
-                className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
-              >
-                {item.desc}
-              </span>
             </div>
+            <div>{item.tips}</div>
           </div>
-          <div>{item.tips}</div>
-        </div>
+        </SwiperSlide>
       );
     });
 
-  const handleScroll = (e) => {
-    console.log(e);
-    if (e.deltaY < 0) {
-      // up
-      console.log(1111);
-    } else {
-      // down
-      console.log(2222);
-    }
-  };
-
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
-      setArrData(arg || []);
+      setArrData([...arg] || []);
     });
   }, []);
 
   useEffect(() => {
-    scrollItem.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
+    if (checkValue > swiperInstance.current.activeIndex + 9) {
+      setScrollLock(true);
+      swiperInstance.current.slideNext();
+    }
+
+    if (checkValue < swiperInstance.current.activeIndex) {
+      setScrollLock(true);
+      swiperInstance.current.slidePrev();
+    }
   }, [checkValue]);
 
   return (
@@ -194,10 +219,22 @@ const Home: NextPage = () => {
       </div>
 
       <div
-        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto ${styles.bg} scrollContent`}
-        onWheel={handleScroll}
+        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto  scrollContent`}
       >
-        {gerenateSearchItem()}
+        <Swiper
+          className={`swiper-no-swiping`}
+          onSlideChange={slideChange}
+          scrollbar={{ draggable: false }}
+          speed={0}
+          slidesPerView={10}
+          onSwiper={(swiper) => {
+            swiperInstance.current = swiper;
+          }}
+          direction={"vertical"}
+          mousewheel={true}
+        >
+          {gerenateSearchItem()}
+        </Swiper>
       </div>
     </div>
   );

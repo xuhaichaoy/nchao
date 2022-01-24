@@ -6,7 +6,6 @@ import {
   ipcMain,
 } from "electron";
 import Store from "electron-store";
-// import '../sqlite'
 import "./event";
 
 export default (
@@ -16,6 +15,7 @@ export default (
   const key = "window-state";
   const name = `window-state-${windowName}`;
   const store = new Store({ name });
+  console.log(options, name);
   const defaultSize = {
     width: options.width,
     height: options.height,
@@ -32,6 +32,7 @@ export default (
   const getCurrentPosition = () => {
     const position = win.getPosition();
     const size = win.getSize();
+    console.log(position);
     return {
       x: position[0],
       y: position[1],
@@ -53,7 +54,7 @@ export default (
     const bounds = screen.getPrimaryDisplay().bounds;
     return Object.assign({}, defaultSize, {
       x: (bounds.width - defaultSize.width) / 2,
-      y: (bounds.height - defaultSize.height) / 2,
+      y: (bounds.height - defaultSize.height) / 3,
     });
   };
 
@@ -77,18 +78,22 @@ export default (
   };
 
   state = ensureVisibleOnSomeDisplay(restore());
+  console.log(state);
 
   const browserOptions: BrowserWindowConstructorOptions = {
     ...options,
-    ...state,
+    // TODO 本地配置
+    // ...state,
     webPreferences: {
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: false,
       ...options.webPreferences,
     },
   };
   win = new BrowserWindow(browserOptions);
+  console.log(browserOptions);
+
+  win.once("ready-to-show", () => {
+    win.show();
+  });
 
   win.on("close", saveState);
 

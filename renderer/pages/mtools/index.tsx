@@ -5,11 +5,12 @@ import Image from "next/image";
 import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Mousewheel, Scrollbar } from "swiper";
+import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
 import "swiper/css";
 import "swiper/css/scrollbar";
+import styles from "../../styles/mtools/index.module.scss";
 
-SwiperCore.use([Mousewheel, Scrollbar]);
+SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -18,7 +19,6 @@ const Home: NextPage = () => {
   const [altKey, setAltKey] = useState(false);
   const scrollItem = useRef<any>(null);
   const swiperInstance = useRef<any>(null);
-  const [iskeyDown, setIskeyDown] = useState(false);
   const [scrollLock, setScrollLock] = useState(false);
 
   const handleSearch = ({ target }: any) => {
@@ -53,7 +53,6 @@ const Home: NextPage = () => {
   };
 
   const keyDown = (e) => {
-    setIskeyDown(true);
     const { keyCode, altKey } = e;
     if (altKey) {
       // alt 按下
@@ -99,8 +98,6 @@ const Home: NextPage = () => {
       default:
         break;
     }
-
-    setIskeyDown(false);
   };
 
   const handleClick = (item) => {
@@ -136,13 +133,6 @@ const Home: NextPage = () => {
             onClick={() => handleClick(item)}
           >
             <div className={`flex justify-left items-center w-[100%]`}>
-              {/* <Image
-              className={`rounded-md`}
-              src={item.icon || ""}
-              width={50}
-              height={50}
-              alt="icon"
-            /> */}
               {!altKey ? (
                 <img
                   className={`rounded-md mr-[6px]`}
@@ -194,13 +184,13 @@ const Home: NextPage = () => {
   }, [checkValue]);
 
   return (
-    <div className={`p-4`}>
+    <div className={``}>
       <div
         className={`flex justify-center border-dark-100 border rounded-lg px-2`}
       >
         <input
           type="text"
-          className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider`}
+          className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider ${styles.coreSearch}`}
           value={searchValue}
           spellCheck={false}
           onChange={handleSearch}
@@ -215,17 +205,22 @@ const Home: NextPage = () => {
             height={50}
             alt="icon"
           />
+          {/* <img src="" alt="" /> */}
         </div>
       </div>
 
       <div
-        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto  scrollContent`}
+        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto ${styles.scrollContent}`}
       >
         <Swiper
           className={`swiper-no-swiping`}
           onSlideChange={slideChange}
           scrollbar={{ draggable: false }}
           speed={0}
+          keyboard={{
+            enabled: true,
+            onlyInViewport: false,
+          }}
           slidesPerView={10}
           onSwiper={(swiper) => {
             swiperInstance.current = swiper;

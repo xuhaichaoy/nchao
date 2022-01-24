@@ -14,9 +14,9 @@ module.exports = {
     return config;
   },
   images: {
-    // domains: ["pay-test-passport.66rpg.com"],
-    // loader: "imgix",
-    path: "https://pay-test-www.66rpg.com",
+    domains: ["test-passport.66rpg.com"],
+    loader: "imgix",
+    path: "https://test-www.66rpg.com",
   },
   sassOptions: {
     includePaths: [path.join(__dirname, "renderer/styles")],

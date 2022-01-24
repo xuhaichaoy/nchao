@@ -1,4 +1,4 @@
-import { app } from "electron";
+import { app, screen } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import { insertTable, delTable } from "./sqlite";
@@ -23,9 +23,23 @@ if (isProd) {
     insertTable(data);
   }, 2000);
 
+  console.log(screen);
+
   const mainWindow = createWindow("main", {
-    width: 1000,
-    height: 600,
+    width: 800,
+    height: 66,
+    frame: false,
+    fullscreenable: false,
+    maximizable: false,
+    center: false,
+    resizable: false,
+    backgroundColor: "white",
+    show: false,
+    webPreferences: {
+      webSecurity: false,
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
   });
 
   if (isProd) {

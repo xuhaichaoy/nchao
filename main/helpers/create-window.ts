@@ -3,10 +3,10 @@ import {
   screen,
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  ipcMain,
 } from "electron";
 import Store from "electron-store";
 import "./event";
+import { handleIpc } from "./event";
 
 export default (
   windowName: string,
@@ -15,7 +15,6 @@ export default (
   const key = "window-state";
   const name = `window-state-${windowName}`;
   const store = new Store({ name });
-  console.log(options, name);
   const defaultSize = {
     width: options.width,
     height: options.height,
@@ -25,14 +24,9 @@ export default (
 
   const restore = () => store.get(key, defaultSize);
 
-  ipcMain.on("MainProgress", function (e, argMsg) {
-    console.log(argMsg);
-  });
-
   const getCurrentPosition = () => {
     const position = win.getPosition();
     const size = win.getSize();
-    console.log(position);
     return {
       x: position[0],
       y: position[1],
@@ -78,7 +72,7 @@ export default (
   };
 
   state = ensureVisibleOnSomeDisplay(restore());
-  console.log(state);
+  // console.log(state);
 
   const browserOptions: BrowserWindowConstructorOptions = {
     ...options,
@@ -89,7 +83,8 @@ export default (
     },
   };
   win = new BrowserWindow(browserOptions);
-  console.log(browserOptions);
+
+  handleIpc(win);
 
   win.once("ready-to-show", () => {
     win.show();

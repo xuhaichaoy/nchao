@@ -14,6 +14,12 @@ if (isProd) {
 
 (async () => {
   await app.whenReady();
+  // const { screen } = require('electron')
+
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
+  console.log(width, height);
 
   let data = await fileLists();
   console.log(data);
@@ -34,6 +40,8 @@ if (isProd) {
     center: false,
     resizable: false,
     backgroundColor: "white",
+    x: width / 2 - 400,
+    y: height / 2 - 333,
     show: false,
     webPreferences: {
       webSecurity: false,

@@ -101,9 +101,9 @@ const Home: NextPage = () => {
   };
 
   const handleClick = (item) => {
-    ipcRenderer.send("handleOpenVlaue", item);
     setSearchValue("");
     setArrData([]);
+    ipcRenderer.send("handleOpenVlaue", item);
   };
 
   const slideChange = (swiper) => {
@@ -167,7 +167,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
-      setArrData([...arg] || []);
+      console.log(arg);
+      setArrData(arg || []);
     });
   }, []);
 
@@ -182,6 +183,16 @@ const Home: NextPage = () => {
       swiperInstance.current.slidePrev();
     }
   }, [checkValue]);
+
+  useEffect(() => {
+    if (arrData.length >= 10) {
+      ipcRenderer.send("setWindowSize", 660);
+    } else if (arrData.length > 0) {
+      ipcRenderer.send("setWindowSize", arrData.length * 60 + 62);
+    } else {
+      ipcRenderer.send("setWindowSize", 66);
+    }
+  }, [arrData.length]);
 
   return (
     <div className={``}>
@@ -210,12 +221,12 @@ const Home: NextPage = () => {
       </div>
 
       <div
-        className={`bg-gray-100 rounded-b-lg max-h-[600px] overflow-auto ${styles.scrollContent}`}
+        className={`bg-gray-100 rounded-b-lg max-h-[600px] mt-[-5px] overflow-auto ${styles.scrollContent}`}
       >
         <Swiper
           className={`swiper-no-swiping`}
           onSlideChange={slideChange}
-          scrollbar={{ draggable: false }}
+          scrollbar={{ draggable: false, dragSize: 50 }}
           speed={0}
           keyboard={{
             enabled: true,

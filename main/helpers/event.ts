@@ -21,7 +21,6 @@ export const handleIpc = (win: BrowserWindow) => {
   });
 
   ipcMain.on("setWindowSize", async (_event, arg) => {
-    console.log(arg);
-    win.setContentSize(800, arg);
+    win.setContentSize(800, arg || 66);
   });
 };

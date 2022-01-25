@@ -20,6 +20,10 @@ const Home: NextPage = () => {
   const scrollItem = useRef<any>(null);
   const swiperInstance = useRef<any>(null);
   const [scrollLock, setScrollLock] = useState(false);
+  const [checkData, setCheckData] = useState({
+    src: "",
+    type: "plugin",
+  });
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);

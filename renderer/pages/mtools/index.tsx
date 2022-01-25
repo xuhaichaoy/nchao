@@ -55,7 +55,6 @@ const Home: NextPage = () => {
   const keyDown = (e) => {
     const { keyCode, altKey } = e;
     if (altKey) {
-      // alt 按下
       e.preventDefault();
       setAltKey(true);
     } else {
@@ -103,7 +102,9 @@ const Home: NextPage = () => {
   const handleClick = (item) => {
     setSearchValue("");
     setArrData([]);
-    ipcRenderer.send("handleOpenVlaue", item);
+    setTimeout(() => {
+      ipcRenderer.send("handleOpenVlaue", item);
+    }, 0);
   };
 
   const slideChange = (swiper) => {
@@ -120,8 +121,15 @@ const Home: NextPage = () => {
     }
   };
 
-  const gerenateSearchItem = () =>
-    arrData.map((item: any, index: number) => {
+  const gerenateSearchItem = () => {
+    // console.log(swiperInstance.current.activeIndex)
+    // TODO 1-0 有问题
+    // swiper 向上滚动不会rerender
+    const activeIndex =
+      (swiperInstance.current && swiperInstance?.current?.activeIndex) || 0;
+
+    return arrData.map((item: any, index: number) => {
+      console.log(activeIndex - index + 1);
       return (
         <SwiperSlide key={item.id}>
           <div
@@ -145,7 +153,9 @@ const Home: NextPage = () => {
                 <div
                   className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center`}
                 >
-                  {index + 1}
+                  {index - activeIndex + 1 >= 1 && index - activeIndex + 1 <= 10
+                    ? index - activeIndex + 1
+                    : ""}
                 </div>
               )}
               <div
@@ -164,6 +174,7 @@ const Home: NextPage = () => {
         </SwiperSlide>
       );
     });
+  };
 
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {

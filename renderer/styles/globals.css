@@ -1,3 +1,4 @@
+@import "~antd/dist/antd.css";
 @tailwind base;
 
 /* Write your own custom base styles here */
@@ -9,7 +10,7 @@
 html,
 body {
   /* @apply bg-gray-900 text-white; */
-  -webkit-app-region: drag;
+  /* -webkit-app-region: drag; */
   overflow: hidden;
   background: white;
 }
@@ -45,7 +46,6 @@ body {
 .swiper-wrapper {
   transition-timing-function: linear !important;
 }
-
 
 .swiper-scrollbar {
   width: 3px !important;

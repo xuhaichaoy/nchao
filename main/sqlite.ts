@@ -6,7 +6,7 @@ const sqlite3 = sqlite.verbose();
 
 const createTable = () => {
   db.serialize(function () {
-    var ext_path: any = path.resolve("./resources/lib/");
+    var ext_path: any = path.resolve("./lib/");
     if (argv("ext_path")) {
       ext_path = argv("ext_path");
     }

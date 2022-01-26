@@ -6,10 +6,11 @@ import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
-// import { Tabs } from 'antd';
+import { Tabs } from "antd";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
+const { TabPane } = Tabs;
 
 SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
 
@@ -233,6 +234,10 @@ const Home: NextPage = () => {
     }
   };
 
+  const callback = (key) => {
+    console.log(key);
+  };
+
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
       swiperInstance.current.slideTo(0, 0, false);
@@ -261,7 +266,7 @@ const Home: NextPage = () => {
     } else if (arrData.length > 0) {
       ipcRenderer.send("setWindowSize", arrData.length * 60 + 62);
     } else {
-      ipcRenderer.send("setWindowSize", 66);
+      ipcRenderer.send("setWindowSize", 660);
     }
 
     setCheckDataFn();
@@ -318,7 +323,22 @@ const Home: NextPage = () => {
         </Swiper>
       </div>
 
-      <div className={``}></div>
+      <div className={`mt-[-5px] bg-light-50`}>
+        <Tabs defaultActiveKey="1" onChange={callback}>
+          <TabPane tab="插件市场" key="1">
+            Content of Tab Pane 1
+          </TabPane>
+          <TabPane tab="我的插件" key="2">
+            Content of Tab Pane 2
+          </TabPane>
+          <TabPane tab="偏好设置" key="3">
+            Content of Tab Pane 3
+          </TabPane>
+          <TabPane tab="帐号与数据" key="4">
+            Content of Tab Pane 3
+          </TabPane>
+        </Tabs>
+      </div>
     </div>
   );
 };

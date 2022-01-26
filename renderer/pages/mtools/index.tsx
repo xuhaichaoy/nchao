@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
+// import { Tabs } from 'antd';
 import "swiper/css";
 import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
@@ -31,7 +32,7 @@ const Home: NextPage = () => {
     info: "",
     keyWords: "",
     names: "",
-    pluginType: "",
+    pluginType: "home",
     type: "home",
     value: "",
   });
@@ -203,7 +204,7 @@ const Home: NextPage = () => {
         keyWords: "",
         names: "",
         pluginType: "home",
-        type: "",
+        type: "home",
         value: "",
       });
     }
@@ -215,10 +216,13 @@ const Home: NextPage = () => {
     if (checkData.type === "home") {
       // TODO
       // 打开插件中心
+      console.log(11111111);
+      ipcRenderer.send("setWindowSize", 660);
     }
   };
 
   const searchIcon = () => {
+    console.log(checkData.type);
     if (checkData.type === "home") {
       return "https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg";
     }
@@ -313,6 +317,8 @@ const Home: NextPage = () => {
           {gerenateSearchItem()}
         </Swiper>
       </div>
+
+      <div className={``}></div>
     </div>
   );
 };

@@ -20,14 +20,13 @@ const Home: NextPage = () => {
   const scrollItem = useRef<any>(null);
   const swiperInstance = useRef<any>(null);
   const [scrollLock, setScrollLock] = useState(false);
-  const [checkData, setCheckData] = useState({
-    src: "",
-    type: "plugin",
-  });
+  // const [checkData, setCheckData] = useState({
+  //   src: "",
+  //   type: "plugin",
+  // });
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);
-    setCheckValue(0);
     if (!target.value) {
       setArrData([]);
       return;
@@ -112,10 +111,13 @@ const Home: NextPage = () => {
   };
 
   const slideChange = (swiper) => {
+    // TODO
+    // 不应触发
     if (scrollLock) {
       setScrollLock(false);
       return;
     }
+    console.log(checkValue, 555555555);
 
     if (checkValue < swiperInstance.current.activeIndex) {
       setCheckValue(swiper.activeIndex);
@@ -126,14 +128,12 @@ const Home: NextPage = () => {
   };
 
   const gerenateSearchItem = () => {
-    // console.log(swiperInstance.current.activeIndex)
     // TODO 1-0 有问题
     // swiper 向上滚动不会rerender
     const activeIndex =
       (swiperInstance.current && swiperInstance?.current?.activeIndex) || 0;
 
     return arrData.map((item: any, index: number) => {
-      console.log(activeIndex - index + 1);
       return (
         <SwiperSlide key={item.id}>
           <div
@@ -182,7 +182,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
-      console.log(arg);
+      swiperInstance.current.slideTo(0, 0, false);
+      setCheckValue(0);
       setArrData(arg || []);
     });
   }, []);

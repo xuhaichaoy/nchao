@@ -20,10 +20,21 @@ const Home: NextPage = () => {
   const scrollItem = useRef<any>(null);
   const swiperInstance = useRef<any>(null);
   const [scrollLock, setScrollLock] = useState(false);
-  // const [checkData, setCheckData] = useState({
-  //   src: "",
-  //   type: "plugin",
-  // });
+  const [checkData, setCheckData] = useState<searchItem>({
+    id: 0,
+    tips: "",
+    icon: "",
+    name: "",
+    path: "",
+    action: "",
+    desc: "",
+    info: "",
+    keyWords: "",
+    names: "",
+    pluginType: "",
+    type: "home",
+    value: "",
+  });
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);
@@ -111,14 +122,10 @@ const Home: NextPage = () => {
   };
 
   const slideChange = (swiper) => {
-    // TODO
-    // 不应触发
     if (scrollLock) {
       setScrollLock(false);
       return;
     }
-    console.log(checkValue, 555555555);
-
     if (checkValue < swiperInstance.current.activeIndex) {
       setCheckValue(swiper.activeIndex);
     }
@@ -180,6 +187,48 @@ const Home: NextPage = () => {
     });
   };
 
+  const setCheckDataFn = () => {
+    if (arrData[checkValue]) {
+      setCheckData(arrData[checkValue]);
+    } else {
+      setCheckData({
+        id: 0,
+        tips: "",
+        icon: "",
+        name: "",
+        path: "",
+        action: "",
+        desc: "",
+        info: "",
+        keyWords: "",
+        names: "",
+        pluginType: "home",
+        type: "",
+        value: "",
+      });
+    }
+
+    console.log(checkData);
+  };
+
+  const handleClickPlugin = () => {
+    if (checkData.type === "home") {
+      // TODO
+      // 打开插件中心
+    }
+  };
+
+  const searchIcon = () => {
+    if (checkData.type === "home") {
+      return "https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg";
+    }
+    if (checkData.type === "app") {
+      return "https://wcdn1.cgyouxi.com/avatar/33807727_1642772971_middle.jpg";
+    } else {
+      return checkData.icon || "";
+    }
+  };
+
   useEffect(() => {
     ipcRenderer.on("getSearchValue", (_event, arg) => {
       swiperInstance.current.slideTo(0, 0, false);
@@ -198,6 +247,8 @@ const Home: NextPage = () => {
       setScrollLock(true);
       swiperInstance.current.slidePrev();
     }
+
+    setCheckDataFn();
   }, [checkValue]);
 
   useEffect(() => {
@@ -208,16 +259,18 @@ const Home: NextPage = () => {
     } else {
       ipcRenderer.send("setWindowSize", 66);
     }
+
+    setCheckDataFn();
   }, [arrData.length]);
 
   return (
     <div className={``}>
       <div
-        className={`flex justify-center border-dark-100 border rounded-lg px-2`}
+        className={`flex justify-center border-dark-100 border rounded-lg px-2 ${styles.coreSearch}`}
       >
         <input
           type="text"
-          className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider ${styles.coreSearch}`}
+          className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider`}
           value={searchValue}
           spellCheck={false}
           onChange={handleSearch}
@@ -225,14 +278,16 @@ const Home: NextPage = () => {
           onKeyUp={keyUp}
         />
         <div className={`flex items-center w-px-10px w-[50px]`}>
-          <Image
-            className={`rounded-md`}
-            src="/user/avatar?uid=59155681&size=big"
+          <img
+            className={`rounded-md ${
+              checkData.type === "home" && "cursor-pointer"
+            }`}
+            src={searchIcon()}
+            onClick={handleClickPlugin}
             width={50}
             height={50}
             alt="icon"
           />
-          {/* <img src="" alt="" /> */}
         </div>
       </div>
 

@@ -52,16 +52,9 @@ const Home: NextPage = () => {
     value: "",
   });
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [isMarket, setIsMarket] = useState(true);
 
-  const suffix = (
-    <AudioOutlined
-      style={{
-        fontSize: 16,
-        color: "#1890ff",
-      }}
-    />
-  );
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);
@@ -243,6 +236,7 @@ const Home: NextPage = () => {
       // TODO
       // 打开插件中心
       console.log(11111111);
+      setIsMarket(true);
       ipcRenderer.send("setWindowSize", 660);
     }
   };
@@ -264,25 +258,29 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    ipcRenderer.on("getSearchValue", (_event, arg) => {
-      swiperInstance.current.slideTo(0, 0, false);
-      setCheckValue(0);
-      setArrData(arg || []);
-    });
+    if (swiperInstance.current) {
+      ipcRenderer.on("getSearchValue", (_event, arg) => {
+        swiperInstance.current.slideTo(0, 0, false);
+        setCheckValue(0);
+        setArrData(arg || []);
+      });
+    }
   }, []);
 
   useEffect(() => {
-    if (checkValue > swiperInstance.current.activeIndex + 9) {
-      setScrollLock(true);
-      swiperInstance.current.slideNext();
-    }
+    if (swiperInstance.current) {
+      if (checkValue > swiperInstance.current.activeIndex + 9) {
+        setScrollLock(true);
+        swiperInstance.current.slideNext();
+      }
 
-    if (checkValue < swiperInstance.current.activeIndex) {
-      setScrollLock(true);
-      swiperInstance.current.slidePrev();
-    }
+      if (checkValue < swiperInstance.current.activeIndex) {
+        setScrollLock(true);
+        swiperInstance.current.slidePrev();
+      }
 
-    setCheckDataFn();
+      setCheckDataFn();
+    }
   }, [checkValue]);
 
   useEffect(() => {
@@ -302,7 +300,9 @@ const Home: NextPage = () => {
   return (
     <div className={``}>
       <div
-        className={`flex justify-center border-dark-100 border rounded-lg px-2 ${styles.coreSearch}`}
+        className={`flex justify-center border-dark-100 border rounded-lg px-2 ${
+          styles.coreSearch
+        } ${isMarket ? styles.canDrag : ""}`}
       >
         <input
           type="text"
@@ -327,246 +327,452 @@ const Home: NextPage = () => {
         </div>
       </div>
 
-      <div
-        className={`bg-gray-100 rounded-b-lg max-h-[600px] mt-[-5px] overflow-auto ${styles.scrollContent}`}
-      >
-        <Swiper
-          className={`swiper-no-swiping`}
-          onSlideChange={slideChange}
-          scrollbar={{ draggable: false, dragSize: 50 }}
-          speed={0}
-          keyboard={{
-            enabled: true,
-            onlyInViewport: false,
-          }}
-          slidesPerView={10}
-          onSwiper={(swiper) => {
-            swiperInstance.current = swiper;
-          }}
-          direction={"vertical"}
-          mousewheel={true}
-        >
-          {gerenateSearchItem()}
-        </Swiper>
-      </div>
-
-      <div className={`mt-[-5px] bg-light-50`}>
-        <div className={``}>
-          <Tabs defaultActiveKey="1">
-            <TabPane
-              tab={
-                <span className={`pl-[14px] pr-[14px]`}>
-                  <UnorderedListOutlined />
-                  插件市场
-                </span>
-              }
-              key="1"
-            >
-              <div className={`flex justify-start items-start box-border`}>
-                <div className={`w-[200px]`}>
-                  <Search
-                    className={`rounded pl-[10px]`}
-                    placeholder="search text"
-                    allowClear
-                    onSearch={onSearch}
-                    style={{ width: 197 }}
-                  />
-                  <Menu
-                    className={`mt-[10px]`}
-                    defaultSelectedKeys={["1"]}
-                    defaultOpenKeys={["sub1"]}
-                    mode="inline"
-                    theme="light"
-                    inlineCollapsed={collapsed}
-                  >
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="1"
-                      icon={<PieChartOutlined />}
-                    >
-                      探索
-                    </Menu.Item>
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="2"
-                      icon={<DesktopOutlined />}
-                    >
-                      生产效率
-                    </Menu.Item>
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="3"
-                      icon={<ContainerOutlined />}
-                    >
-                      搜索工具
-                    </Menu.Item>
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="4"
-                      icon={<ContainerOutlined />}
-                    >
-                      图像
-                    </Menu.Item>
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="5"
-                      icon={<ContainerOutlined />}
-                    >
-                      开发
-                    </Menu.Item>
-                    <Menu.Item
-                      className={`!pl-[14px]`}
-                      key="6"
-                      icon={<ContainerOutlined />}
-                    >
-                      创意
-                    </Menu.Item>
-                  </Menu>
-                </div>
-                <div
-                  className={`ml-[10px] w-[calc(100%-210px)] pr-[20px] box-border`}
-                >
-                  <div className={`flex justify-start items-center`}>
-                    <img
-                      className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded`}
-                      src="https://pic.cgyouxi.com/orange/upload/202107/79031603_d73aab3135e1085ecc84aec671f682f9.gif"
-                      alt=""
+      {isMarket ? (
+        <div className={`mt-[-5px] bg-light-50`}>
+          <div className={``}>
+            <Tabs defaultActiveKey="1">
+              <TabPane
+                tab={
+                  <span className={`pl-[14px] pr-[14px]`}>
+                    <UnorderedListOutlined />
+                    插件市场
+                  </span>
+                }
+                key="1"
+              >
+                <div className={`flex justify-start items-start box-border`}>
+                  <div className={`w-[200px]`}>
+                    <Search
+                      className={`rounded pl-[10px]`}
+                      placeholder="search text"
+                      allowClear
+                      onSearch={onSearch}
+                      style={{ width: 197 }}
                     />
-                    <img
-                      className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded ml-[10px]`}
-                      src="https://pic.cgyouxi.com/orange/title/faa92632e8f6c4d72ccfb56a1d2d5f79_48.jpg"
-                      alt=""
-                    />
+                    <Menu
+                      className={`mt-[10px]`}
+                      defaultSelectedKeys={["1"]}
+                      defaultOpenKeys={["sub1"]}
+                      mode="inline"
+                      theme="light"
+                      inlineCollapsed={collapsed}
+                    >
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="1"
+                        icon={<PieChartOutlined />}
+                      >
+                        探索
+                      </Menu.Item>
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="2"
+                        icon={<DesktopOutlined />}
+                      >
+                        生产效率
+                      </Menu.Item>
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="3"
+                        icon={<ContainerOutlined />}
+                      >
+                        搜索工具
+                      </Menu.Item>
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="4"
+                        icon={<ContainerOutlined />}
+                      >
+                        图像
+                      </Menu.Item>
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="5"
+                        icon={<ContainerOutlined />}
+                      >
+                        开发
+                      </Menu.Item>
+                      <Menu.Item
+                        className={`!pl-[14px]`}
+                        key="6"
+                        icon={<ContainerOutlined />}
+                      >
+                        创意
+                      </Menu.Item>
+                    </Menu>
                   </div>
-                  <div className={`mt-[24px]`}>
-                    <div className={`flex justify-between items-center`}>
-                      <div>推荐</div>
-                      <div>查看全部</div>
+                  <div
+                    className={`ml-[10px] w-[calc(100%-210px)] h-[calc(100vh-126px)] pr-[20px] box-border overflow-auto ${styles.scrollStyle}`}
+                  >
+                    <div
+                      className={`flex justify-start items-center mb-[20px]`}
+                    >
+                      <img
+                        className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded`}
+                        src="https://pic.cgyouxi.com/orange/upload/202107/79031603_d73aab3135e1085ecc84aec671f682f9.gif"
+                        alt=""
+                      />
+                      <img
+                        className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded ml-[10px]`}
+                        src="https://pic.cgyouxi.com/orange/title/faa92632e8f6c4d72ccfb56a1d2d5f79_48.jpg"
+                        alt=""
+                      />
+                    </div>
+                    <div className={``}>
+                      <div className={`flex justify-between items-center`}>
+                        <div className={`text-[16px] font-semibold`}>推荐</div>
+                        <div
+                          className={`text-[13px] text-sky-500 cursor-pointer`}
+                        >
+                          查看全部
+                        </div>
+                      </div>
+                      <div
+                        className={`flex justify-start items-start flex-wrap mt-[14px]`}
+                      >
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-center`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div className={`text-[14px]`}>阿萨大时代</div>
+                              <span
+                                className={`text-[12px] mt-[8px] text-warm-gray-400 block`}
+                              >
+                                啊啊啊啊啊啊
+                              </span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div className={`text-[16px]`}>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                      </div>
                     </div>
                     <div
-                      className={`flex justify-start items-start flex-wrap mt-[6px]`}
-                    >
-                      <div
-                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
-                      >
-                        <div className={`flex justify-start items-start`}>
-                          <img
-                            className={`w-[40px] rounded`}
-                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
-                            alt=""
-                          />
-                          <div className={`ml-[10px]`}>
-                            <div>namesss</div>
-                            <span>tipsssss</span>
-                          </div>
+                      className={`h-[1px] w-[100%] bg-gray-200 mt-[20px] mb-[30px]`}
+                    ></div>
+                    <div className={``}>
+                      <div className={`flex justify-between items-center`}>
+                        <div className={`text-[16px] font-semibold`}>推荐</div>
+                        <div
+                          className={`text-[13px] text-sky-500 cursor-pointer`}
+                        >
+                          查看全部
                         </div>
-                        <div>icon</div>
                       </div>
                       <div
-                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        className={`flex justify-start items-start flex-wrap mt-[14px]`}
                       >
-                        <div className={`flex justify-start items-start`}>
-                          <img
-                            className={`w-[40px] rounded`}
-                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
-                            alt=""
-                          />
-                          <div className={`ml-[10px]`}>
-                            <div>namesss</div>
-                            <span>tipsssss</span>
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
                           </div>
+                          <div>icon</div>
                         </div>
-                        <div>icon</div>
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={`h-[1px] w-[100%] bg-gray-200 mt-[20px] mb-[30px]`}
+                    ></div>
+                    <div className={``}>
+                      <div className={`flex justify-between items-center`}>
+                        <div className={`text-[16px] font-semibold`}>推荐</div>
+                        <div
+                          className={`text-[13px] text-sky-500 cursor-pointer`}
+                        >
+                          查看全部
+                        </div>
                       </div>
                       <div
-                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        className={`flex justify-start items-start flex-wrap mt-[14px]`}
                       >
-                        <div className={`flex justify-start items-start`}>
-                          <img
-                            className={`w-[40px] rounded`}
-                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
-                            alt=""
-                          />
-                          <div className={`ml-[10px]`}>
-                            <div>namesss</div>
-                            <span>tipsssss</span>
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
                           </div>
+                          <div>icon</div>
                         </div>
-                        <div>icon</div>
-                      </div>
-                      <div
-                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
-                      >
-                        <div className={`flex justify-start items-start`}>
-                          <img
-                            className={`w-[40px] rounded`}
-                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
-                            alt=""
-                          />
-                          <div className={`ml-[10px]`}>
-                            <div>namesss</div>
-                            <span>tipsssss</span>
+                        <div
+                          className={`w-[calc(50%-10px)] cursor-pointer h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
                           </div>
+                          <div>icon</div>
                         </div>
-                        <div>icon</div>
-                      </div>
-                      <div
-                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
-                      >
-                        <div className={`flex justify-start items-start`}>
-                          <img
-                            className={`w-[40px] rounded`}
-                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
-                            alt=""
-                          />
-                          <div className={`ml-[10px]`}>
-                            <div>namesss</div>
-                            <span>tipsssss</span>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
                           </div>
+                          <div>icon</div>
                         </div>
-                        <div>icon</div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
+                        <div
+                          className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                        >
+                          <div className={`flex justify-start items-start`}>
+                            <img
+                              className={`w-[40px] rounded`}
+                              src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                              alt=""
+                            />
+                            <div className={`ml-[10px]`}>
+                              <div>阿萨大时代</div>
+                              <span>啊啊啊啊啊啊</span>
+                            </div>
+                          </div>
+                          <div>icon</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </TabPane>
-            <TabPane
-              tab={
-                <span className={`pl-[14px] pr-[14px]`}>
-                  <AndroidOutlined />
-                  我的插件
-                </span>
-              }
-              key="2"
-            >
-              Tab 2
-            </TabPane>
-            <TabPane
-              tab={
-                <span className={`pl-[14px] pr-[14px]`}>
-                  <AndroidOutlined />
-                  偏好设置
-                </span>
-              }
-              key="3"
-            >
-              Tab 3
-            </TabPane>
-            <TabPane
-              tab={
-                <span className={`pl-[14px] pr-[14px]`}>
-                  <AndroidOutlined />
-                  帐号与数据
-                </span>
-              }
-              key="4"
-            >
-              Tab 4
-            </TabPane>
-          </Tabs>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span className={`pl-[14px] pr-[14px]`}>
+                    <AndroidOutlined />
+                    我的插件
+                  </span>
+                }
+                key="2"
+              >
+                Tab 2
+              </TabPane>
+              <TabPane
+                tab={
+                  <span className={`pl-[14px] pr-[14px]`}>
+                    <AndroidOutlined />
+                    偏好设置
+                  </span>
+                }
+                key="3"
+              >
+                Tab 3
+              </TabPane>
+              <TabPane
+                tab={
+                  <span className={`pl-[14px] pr-[14px]`}>
+                    <AndroidOutlined />
+                    帐号与数据
+                  </span>
+                }
+                key="4"
+              >
+                Tab 4
+              </TabPane>
+            </Tabs>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div
+          className={`bg-gray-100 rounded-b-lg max-h-[600px] mt-[-5px] overflow-auto ${styles.scrollContent}`}
+        >
+          <Swiper
+            className={`swiper-no-swiping`}
+            onSlideChange={slideChange}
+            scrollbar={{ draggable: false, dragSize: 50 }}
+            speed={0}
+            keyboard={{
+              enabled: true,
+              onlyInViewport: false,
+            }}
+            slidesPerView={10}
+            onSwiper={(swiper) => {
+              swiperInstance.current = swiper;
+            }}
+            direction={"vertical"}
+            mousewheel={true}
+          >
+            {gerenateSearchItem()}
+          </Swiper>
+        </div>
+      )}
     </div>
   );
 };

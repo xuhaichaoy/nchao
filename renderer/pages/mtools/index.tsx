@@ -6,11 +6,25 @@ import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
-import { Tabs } from "antd";
+import {
+  UnorderedListOutlined,
+  AndroidOutlined,
+  AudioOutlined,
+  AppstoreOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  PieChartOutlined,
+  DesktopOutlined,
+  ContainerOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
+import { Tabs, Input, Space, Menu, Button } from "antd";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
 const { TabPane } = Tabs;
+const { Search } = Input;
+const { SubMenu } = Menu;
 
 SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
 
@@ -37,6 +51,17 @@ const Home: NextPage = () => {
     type: "home",
     value: "",
   });
+
+  const [collapsed, setCollapsed] = useState(false);
+
+  const suffix = (
+    <AudioOutlined
+      style={{
+        fontSize: 16,
+        color: "#1890ff",
+      }}
+    />
+  );
 
   const handleSearch = ({ target }: any) => {
     setSearchValue(target.value);
@@ -272,6 +297,8 @@ const Home: NextPage = () => {
     setCheckDataFn();
   }, [arrData.length]);
 
+  const onSearch = (value) => console.log(value);
+
   return (
     <div className={``}>
       <div
@@ -324,20 +351,221 @@ const Home: NextPage = () => {
       </div>
 
       <div className={`mt-[-5px] bg-light-50`}>
-        <Tabs defaultActiveKey="1" onChange={callback}>
-          <TabPane tab="插件市场" key="1">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="我的插件" key="2">
-            Content of Tab Pane 2
-          </TabPane>
-          <TabPane tab="偏好设置" key="3">
-            Content of Tab Pane 3
-          </TabPane>
-          <TabPane tab="帐号与数据" key="4">
-            Content of Tab Pane 3
-          </TabPane>
-        </Tabs>
+        <div className={``}>
+          <Tabs defaultActiveKey="1">
+            <TabPane
+              tab={
+                <span className={`pl-[14px] pr-[14px]`}>
+                  <UnorderedListOutlined />
+                  插件市场
+                </span>
+              }
+              key="1"
+            >
+              <div className={`flex justify-start items-start box-border`}>
+                <div className={`w-[200px]`}>
+                  <Search
+                    className={`rounded pl-[10px]`}
+                    placeholder="search text"
+                    allowClear
+                    onSearch={onSearch}
+                    style={{ width: 197 }}
+                  />
+                  <Menu
+                    className={`mt-[10px]`}
+                    defaultSelectedKeys={["1"]}
+                    defaultOpenKeys={["sub1"]}
+                    mode="inline"
+                    theme="light"
+                    inlineCollapsed={collapsed}
+                  >
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="1"
+                      icon={<PieChartOutlined />}
+                    >
+                      探索
+                    </Menu.Item>
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="2"
+                      icon={<DesktopOutlined />}
+                    >
+                      生产效率
+                    </Menu.Item>
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="3"
+                      icon={<ContainerOutlined />}
+                    >
+                      搜索工具
+                    </Menu.Item>
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="4"
+                      icon={<ContainerOutlined />}
+                    >
+                      图像
+                    </Menu.Item>
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="5"
+                      icon={<ContainerOutlined />}
+                    >
+                      开发
+                    </Menu.Item>
+                    <Menu.Item
+                      className={`!pl-[14px]`}
+                      key="6"
+                      icon={<ContainerOutlined />}
+                    >
+                      创意
+                    </Menu.Item>
+                  </Menu>
+                </div>
+                <div
+                  className={`ml-[10px] w-[calc(100%-210px)] pr-[20px] box-border`}
+                >
+                  <div className={`flex justify-start items-center`}>
+                    <img
+                      className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded`}
+                      src="https://pic.cgyouxi.com/orange/upload/202107/79031603_d73aab3135e1085ecc84aec671f682f9.gif"
+                      alt=""
+                    />
+                    <img
+                      className={`w-[calc(50%-5px)] h-[160px] cursor-pointer rounded ml-[10px]`}
+                      src="https://pic.cgyouxi.com/orange/title/faa92632e8f6c4d72ccfb56a1d2d5f79_48.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <div className={`mt-[24px]`}>
+                    <div className={`flex justify-between items-center`}>
+                      <div>推荐</div>
+                      <div>查看全部</div>
+                    </div>
+                    <div
+                      className={`flex justify-start items-start flex-wrap mt-[6px]`}
+                    >
+                      <div
+                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                      >
+                        <div className={`flex justify-start items-start`}>
+                          <img
+                            className={`w-[40px] rounded`}
+                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                            alt=""
+                          />
+                          <div className={`ml-[10px]`}>
+                            <div>namesss</div>
+                            <span>tipsssss</span>
+                          </div>
+                        </div>
+                        <div>icon</div>
+                      </div>
+                      <div
+                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                      >
+                        <div className={`flex justify-start items-start`}>
+                          <img
+                            className={`w-[40px] rounded`}
+                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                            alt=""
+                          />
+                          <div className={`ml-[10px]`}>
+                            <div>namesss</div>
+                            <span>tipsssss</span>
+                          </div>
+                        </div>
+                        <div>icon</div>
+                      </div>
+                      <div
+                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                      >
+                        <div className={`flex justify-start items-start`}>
+                          <img
+                            className={`w-[40px] rounded`}
+                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                            alt=""
+                          />
+                          <div className={`ml-[10px]`}>
+                            <div>namesss</div>
+                            <span>tipsssss</span>
+                          </div>
+                        </div>
+                        <div>icon</div>
+                      </div>
+                      <div
+                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                      >
+                        <div className={`flex justify-start items-start`}>
+                          <img
+                            className={`w-[40px] rounded`}
+                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                            alt=""
+                          />
+                          <div className={`ml-[10px]`}>
+                            <div>namesss</div>
+                            <span>tipsssss</span>
+                          </div>
+                        </div>
+                        <div>icon</div>
+                      </div>
+                      <div
+                        className={`w-[calc(50%-10px)] h-[50px] ${styles.marketContentItem} flex justify-between items-center`}
+                      >
+                        <div className={`flex justify-start items-start`}>
+                          <img
+                            className={`w-[40px] rounded`}
+                            src="https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg"
+                            alt=""
+                          />
+                          <div className={`ml-[10px]`}>
+                            <div>namesss</div>
+                            <span>tipsssss</span>
+                          </div>
+                        </div>
+                        <div>icon</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabPane>
+            <TabPane
+              tab={
+                <span className={`pl-[14px] pr-[14px]`}>
+                  <AndroidOutlined />
+                  我的插件
+                </span>
+              }
+              key="2"
+            >
+              Tab 2
+            </TabPane>
+            <TabPane
+              tab={
+                <span className={`pl-[14px] pr-[14px]`}>
+                  <AndroidOutlined />
+                  偏好设置
+                </span>
+              }
+              key="3"
+            >
+              Tab 3
+            </TabPane>
+            <TabPane
+              tab={
+                <span className={`pl-[14px] pr-[14px]`}>
+                  <AndroidOutlined />
+                  帐号与数据
+                </span>
+              }
+              key="4"
+            >
+              Tab 4
+            </TabPane>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

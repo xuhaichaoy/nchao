@@ -6,3 +6,10 @@
   // width: 10px;
 }
 
+.marketContentItem:nth-child(2n - 1) {
+  margin-right: 20px;
+}
+
+.marketContentItem {
+  margin-bottom: 6px;
+}

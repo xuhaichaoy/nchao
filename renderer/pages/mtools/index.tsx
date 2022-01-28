@@ -6,7 +6,7 @@ import { ipcRenderer } from "electron";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MarketContext } from "../../component/mtools/marketContext";
 import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
-import Market from "../../component/mtools/marketCenter";
+import Market from "../../component/mtools/pluginCenter";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
@@ -42,7 +42,7 @@ const Home: NextPage = () => {
   const [isMarket, setIsMarket] = useState(false);
 
   const handleSearch = ({ target }: any) => {
-    setSearchValue(target.value);
+    setSearchValue(target.value.trim());
     if (!target.value) {
       setArrData([]);
       return;
@@ -162,7 +162,7 @@ const Home: NextPage = () => {
         <SwiperSlide key={item.id}>
           <div
             ref={checkValue === index ? scrollItem : null}
-            className={`h-[60px] w-[100%] text-left flex px-4 justify-between items-center  ${
+            className={`h-[60px] w-[100%] text-left flex px-4 cursor-pointer justify-between items-center  ${
               checkValue === index ? "bg-gray-300 checked" : ""
             }`}
             key={item.id}
@@ -228,11 +228,10 @@ const Home: NextPage = () => {
     console.log(checkData);
   };
 
-  const handleClickPlugin = () => {
+  const openPluginCenter = () => {
     if (checkData.type === "home") {
-      // TODO
       // 打开插件中心
-      console.log(11111111);
+      setSearchValue("插件市场");
       setIsMarket(true);
       ipcRenderer.send("setWindowSize", 660);
     }
@@ -302,6 +301,7 @@ const Home: NextPage = () => {
         <input
           ref={coreSearchInput}
           type="text"
+          placeholder="Hi, mTools"
           className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider`}
           value={searchValue}
           spellCheck={false}
@@ -315,7 +315,7 @@ const Home: NextPage = () => {
               checkData.type === "home" && "cursor-pointer"
             }`}
             src={searchIcon()}
-            onClick={handleClickPlugin}
+            onClick={openPluginCenter}
             width={50}
             height={50}
             alt="icon"

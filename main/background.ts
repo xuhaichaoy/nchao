@@ -1,4 +1,4 @@
-import { app, screen } from "electron";
+import { app, screen, globalShortcut } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import { insertTable, delTable } from "./core/db/sqlite";
@@ -57,6 +57,10 @@ if (isProd) {
     mainWindow.webContents.openDevTools();
   }
   setTray(app, mainWindow);
+  globalShortcut.register("Alt+W", function () {
+    console.log(1111111111);
+    mainWindow.show();
+  });
 })();
 
 app.on("window-all-closed", () => {

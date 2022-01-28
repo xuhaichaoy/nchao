@@ -39,5 +39,6 @@ export const setTray = (app, mainWindow) => {
     // 关闭托盘显示
     // appTray.destroy();
   });
+
   return appTray;
 };

@@ -53,6 +53,7 @@
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "extract-file-icon": "^0.3.2",
+    "fix-path": "^4.0.0",
     "just-scripts": "^1.6.1",
     "sass": "^1.48.0",
     "sqlite3": "^5.0.2",

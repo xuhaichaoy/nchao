@@ -3,6 +3,8 @@ import {
   screen,
   BrowserWindow,
   BrowserWindowConstructorOptions,
+  Menu,
+  Tray,
 } from "electron";
 import Store from "electron-store";
 import "./event";

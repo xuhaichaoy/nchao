@@ -51,6 +51,12 @@ const Home: NextPage = () => {
   };
 
   const resetFn = () => {
+    if (!searchValue) {
+      // TODO
+      // 关闭窗口
+      ipcRenderer.send("close");
+      return;
+    }
     setIsMarket(false);
     setSearchValue("");
     setArrData([]);
@@ -224,8 +230,6 @@ const Home: NextPage = () => {
         value: "",
       });
     }
-
-    console.log(checkData);
   };
 
   const openPluginCenter = () => {
@@ -238,7 +242,6 @@ const Home: NextPage = () => {
   };
 
   const searchIcon = () => {
-    console.log(checkData.type);
     if (checkData.type === "home") {
       return "https://wcdn1.cgyouxi.com/avatar/59155681_1617962918_big.jpg";
     }
@@ -259,6 +262,7 @@ const Home: NextPage = () => {
         swiperInstance.current.slideTo(0, 0, false);
         setCheckValue(0);
         setArrData(arg || []);
+        console.log(arg);
       });
     }
   }, []);

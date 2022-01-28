@@ -1,8 +1,9 @@
 import { app, screen } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
-import { insertTable, delTable } from "./sqlite";
-import fileLists from "./win";
+import { insertTable, delTable } from "./core/db/sqlite";
+import fileLists from "./core/search/win";
+import { setTray } from "./helpers/api/index";
 
 const isProd: boolean = process.env.NODE_ENV === "production";
 
@@ -14,8 +15,6 @@ if (isProd) {
 
 (async () => {
   await app.whenReady();
-  // const { screen } = require('electron')
-
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
@@ -57,6 +56,7 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
+  setTray(app, mainWindow);
 })();
 
 app.on("window-all-closed", () => {

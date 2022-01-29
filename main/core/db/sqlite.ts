@@ -25,14 +25,14 @@ const createTable = () => {
     db.run("select jieba_dict(?)", dict_path);
 
     db.run(
-      "CREATE VIRTUAL TABLE IF NOT EXISTS local USING fts5(desc, icon, value, type, pluginType, action, keyWords, name, names,tokenize = 'simple')"
+      "CREATE VIRTUAL TABLE IF NOT EXISTS local USING fts5(desc, icon, value, type, pluginType, action, keyWords, name, names, features, pluginName, description, author, main, logo, version, preload, homePage, isdwonload, isloading, tokenize = 'simple')"
     );
   });
 };
 
 export const insertTable = (data) => {
   const stmt = db.prepare(
-    "INSERT INTO local(desc, icon, value, type, pluginType, action, keyWords, name, names) values ($desc, $icon, $value, $type, $pluginType, $action, $keyWords, $name, $names)"
+    "INSERT INTO local(desc, icon, value, type, pluginType, action, keyWords, name, names, features, pluginName, description, author, main, logo, version, preload, homePage, isdwonload, isloading) values ($desc, $icon, $value, $type, $pluginType, $action, $keyWords, $name, $names, $features, $pluginName, $description, $author, $main, $logo, $version, $preload, $homePage, $isdwonload, $isloading)"
   );
   data.map((item) => {
     stmt.run(
@@ -44,7 +44,18 @@ export const insertTable = (data) => {
       item.action,
       item.keyWords,
       item.name,
-      item.names
+      item.names,
+      JSON.stringify(item.features),
+      item.pluginName,
+      item.description,
+      item.author,
+      item.main,
+      item.logo,
+      item.version,
+      item.preload,
+      item.homePage,
+      item.isdwonload,
+      item.isloading
     );
     return item;
   });

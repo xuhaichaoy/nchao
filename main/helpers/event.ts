@@ -2,6 +2,10 @@ import { BrowserWindow } from "electron";
 import { ipcMain, shell } from "electron";
 import { readAllRows } from "../core/db/sqlite";
 import { execSync } from "child_process";
+import { runner, detach } from "../browsers";
+import pluginClickEvent from "../core/plugin/clickplugin";
+
+const runnerInstance = runner();
 
 export const handleIpc = (win: BrowserWindow) => {
   ipcMain.on("handleSearchValue", async (event, arg) => {
@@ -40,5 +44,31 @@ export const handleIpc = (win: BrowserWindow) => {
 
   ipcMain.on("close", async () => {
     win.hide();
+  });
+
+  ipcMain.on("openPlugin", async (event, { plugin }) => {
+    // if (API.currentPlugin && API.currentPlugin.name === plugin.name) return;
+    win.setSize(win.getSize()[0], 60);
+    // runnerInstance.removeView(win);
+    runnerInstance.init(plugin, win);
+    pluginClickEvent({
+      ...plugin,
+    });
+    // API.currentPlugin = plugin;
+    // win.webContents.executeJavaScript(
+    //   `win.setCurrentPlugin(${JSON.stringify({
+    //     currentPlugin: API.currentPlugin,
+    //   })})`
+    // );
+    win.show();
+    // 按 ESC 退出插件
+    // win.webContents.on("before-input-event", (event, input) =>
+    //   API.__EscapeKeyDown(event, input, window)
+    // );
+    // runnerInstance
+    //   .getView()
+    //   .webContents.on("before-input-event", (event, input) =>
+    //     API.__EscapeKeyDown(event, input, window)
+    //   );
   });
 };

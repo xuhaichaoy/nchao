@@ -139,9 +139,36 @@ const Home: NextPage = () => {
   const handleClick = (item) => {
     setSearchValue("");
     setArrData([]);
-    setTimeout(() => {
-      ipcRenderer.send("handleOpenVlaue", item);
-    }, 0);
+    if (item.pluginType === "app") {
+      // 打开app
+      setTimeout(() => {
+        ipcRenderer.send("handleOpenVlaue", item);
+      }, 0);
+    } else if (item.pluginType === "ui") {
+      // 打开UI
+      console.log(item, 123123123);
+      // if (state.currentPlugin && state.currentPlugin.name === plugin.name) {
+      //   return;
+      // }
+      // state.pluginLoading = true;
+      // state.currentPlugin = plugin;
+      ipcRenderer.sendSync("openPlugin", {
+        type: "openPlugin",
+        plugin: JSON.parse(
+          JSON.stringify({
+            ...item,
+            ext: item.ext || {
+              code: item.feature.code,
+              type: item.cmd.type || "text",
+              payload: null,
+            },
+          })
+        ),
+      });
+    } else if (item.pluginType === "system") {
+      // 打开system
+      console.log(item, 3213123);
+    }
   };
 
   const slideChange = (swiper) => {
@@ -252,6 +279,10 @@ const Home: NextPage = () => {
     }
   };
 
+  const focusInput = () => {
+    // coreSearchInput.current.focus()
+  };
+
   const context = {
     resetFn,
   };
@@ -296,11 +327,12 @@ const Home: NextPage = () => {
   }, [arrData.length]);
 
   return (
-    <div className={``}>
+    <div className={`min-h-[66px] bg-light`}>
       <div
         className={`flex justify-center border-dark-100 border rounded-lg px-2 ${
           styles.coreSearch
         } ${isMarket ? styles.canDrag : ""}`}
+        onClick={focusInput}
       >
         <input
           ref={coreSearchInput}

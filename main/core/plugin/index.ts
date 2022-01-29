@@ -1,4 +1,4 @@
-import { AdapterHandlerOptions, AdapterInfo } from "./plugin";
+import type { AdapterHandlerOptions, AdapterInfo } from "./plugin";
 import fs from "fs-extra";
 import path from "path";
 import got from "got";

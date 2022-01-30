@@ -7,6 +7,7 @@ import { setTray } from "./helpers/api/index";
 import { localdatafile } from "../utils/getLocalDataFile";
 import path from "path";
 import fs from "fs";
+// declare const __static: string;
 
 const configPath = path.join(localdatafile(), "./mynextron-plugin.json");
 
@@ -45,44 +46,9 @@ if (isProd) {
 
   let data = await fileLists();
   let localPlugin = [];
-  let options: any = [];
 
   try {
     localPlugin = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    // localPlugin.forEach((plugin) => {
-    //   const feature = plugin.features;
-    //   console.log(feature);
-    //   // 系统插件无 features 的情况，不需要再搜索
-    //   if (!feature) return;
-    //   feature.forEach((fe) => {
-    //     const cmds = searchKeyValues(fe.cmds, value, false);
-    //     console.log(cmds, 777777)
-    //     options = [
-    //       ...options,
-    //       ...cmds.map((cmd) => ({
-    //         name: cmd.label || cmd,
-    //         value: "plugin",
-    //         icon: plugin.logo,
-    //         desc: fe.explain,
-    //         type: plugin.pluginType,
-    //         zIndex: cmd.label ? 0 : 1, // 排序权重
-    //         core: {
-    //           plugin,
-    //           fe,
-    //           cmd,
-    //           ext: cmd.type
-    //             ? {
-    //                 code: fe.code,
-    //                 type: cmd.type || "text",
-    //                 payload: searchValue.value,
-    //               }
-    //             : null,
-    //           openPlugin,
-    //         },
-    //       })),
-    //     ];
-    //   });
-    // });
   } catch (error) {
     console.log(error);
   }

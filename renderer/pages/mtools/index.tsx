@@ -152,16 +152,16 @@ const Home: NextPage = () => {
       // }
       // state.pluginLoading = true;
       // state.currentPlugin = plugin;
-      ipcRenderer.sendSync("openPlugin", {
+      ipcRenderer.send("openPlugin", {
         type: "openPlugin",
         plugin: JSON.parse(
           JSON.stringify({
             ...item,
-            ext: item.ext || {
-              code: item.feature.code,
-              type: item.cmd.type || "text",
-              payload: null,
-            },
+            // ext: item.ext || {
+            //   code: item.feature.code,
+            //   type: item.cmd.type || "text",
+            //   payload: null,
+            // },
           })
         ),
       });

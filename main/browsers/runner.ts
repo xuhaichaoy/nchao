@@ -2,7 +2,7 @@ import { BrowserView, BrowserWindow, session, app } from "electron";
 import path from "path";
 import { windows, dev } from "../../utils/commonConst";
 
-declare const __static: string;
+const __static: string = path.join(__dirname, "/static").replace(/\\/g, "\\\\");
 const appPath = app.getPath("cache");
 const baseDir = path.join(appPath, "./rubick-plugins");
 
@@ -40,11 +40,13 @@ export const runner = () => {
   };
 
   const createView = (plugin, window: BrowserWindow) => {
+    console.log(plugin, 45);
     let pluginIndexPath = plugin.tplPath || plugin.indexPath;
     if (!pluginIndexPath) {
       const pluginPath = path.resolve(baseDir, "node_modules", plugin.name);
       pluginIndexPath = `file://${path.join(pluginPath, "./", plugin.main)}`;
     }
+    console.log(pluginIndexPath);
     const preload = getPreloadPath(plugin, pluginIndexPath);
 
     const ses = session.fromPartition("<" + plugin.name + ">");
@@ -70,7 +72,7 @@ export const runner = () => {
       view.setAutoResize({ width: true });
       executeHooks("PluginEnter", plugin.ext);
       executeHooks("PluginReady", plugin.ext);
-      window.webContents.executeJavaScript(`window.pluginLoaded()`);
+      // window.webContents.executeJavaScript(`window.pluginLoaded()`);
     });
   };
 

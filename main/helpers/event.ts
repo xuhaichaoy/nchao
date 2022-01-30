@@ -50,17 +50,20 @@ export const handleIpc = (win: BrowserWindow) => {
     // if (API.currentPlugin && API.currentPlugin.name === plugin.name) return;
     win.setSize(win.getSize()[0], 60);
     // runnerInstance.removeView(win);
+
     runnerInstance.init(plugin, win);
     pluginClickEvent({
+      plugin,
       ...plugin,
     });
+
     // API.currentPlugin = plugin;
     // win.webContents.executeJavaScript(
     //   `win.setCurrentPlugin(${JSON.stringify({
     //     currentPlugin: API.currentPlugin,
     //   })})`
     // );
-    win.show();
+    // win.show();
     // 按 ESC 退出插件
     // win.webContents.on("before-input-event", (event, input) =>
     //   API.__EscapeKeyDown(event, input, window)

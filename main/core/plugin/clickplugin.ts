@@ -3,19 +3,24 @@ import path from "path";
 // import { toRaw } from "vue";
 // import commonConst from "@/common/utils/commonConst";
 import { dev } from "../../../utils/commonConst";
-declare const __static: string;
 const appPath = app.getPath("cache");
 const baseDir = path.join(appPath, "./rubick-plugins");
 
 export default function pluginClickEvent({ plugin, fe, cmd, ext, openPlugin }) {
-  const pluginPath = path.resolve(baseDir, "node_modules", plugin.name);
+  const __static: string = path
+    .join(__dirname, "/static")
+    .replace(/\\/g, "\\\\");
+
+  console.log(plugin, 54);
+
+  // const pluginPath = path.resolve(baseDir, "node_modules", plugin.name);
   const pluginDist = {
     // ...toRaw(plugin),
     ...plugin,
-    indexPath: `file://${path.join(pluginPath, "./", plugin.main || "")}`,
-    cmd: cmd.label || cmd,
-    feature: fe,
-    ext,
+    // indexPath: `file://${path.join(pluginPath, "./", plugin.main || "")}`,
+    // cmd: cmd.label || cmd,
+    // feature: fe,
+    // ext,
   };
   // 模板文件
   if (!plugin.main) {
@@ -29,5 +34,5 @@ export default function pluginClickEvent({ plugin, fe, cmd, ext, openPlugin }) {
       ? "http://localhost:8081/#/"
       : `file://${__static}/feature/index.html`;
   }
-  openPlugin(pluginDist);
+  // openPlugin(pluginDist);
 }

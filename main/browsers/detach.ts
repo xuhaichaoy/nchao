@@ -1,5 +1,7 @@
 import { app, BrowserWindow, protocol } from "electron";
 import path from "path";
+
+declare const __static: string;
 export const detach = () => {
   let win: any;
 
@@ -57,6 +59,6 @@ export const detach = () => {
     getWindow,
   };
 };
-function __static(__static: any, arg1: string) {
-  throw new Error("Function not implemented.");
-}
+// function __static(__static: any, arg1: string) {
+//   throw new Error("Function not implemented.");
+// }

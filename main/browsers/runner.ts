@@ -2,7 +2,8 @@ import { BrowserView, BrowserWindow, session, app } from "electron";
 import path from "path";
 import { windows, dev } from "../../utils/commonConst";
 
-const __static: string = path.join(__dirname, "/static").replace(/\\/g, "\\\\");
+const __static: string = path.join(__dirname, "").replace(/\\/g, "\\\\");
+
 const appPath = app.getPath("cache");
 const baseDir = path.join(appPath, "./rubick-plugins");
 
@@ -17,7 +18,7 @@ const getPreloadPath = (plugin, pluginIndexPath) => {
   if (!preload) return;
   if (dev()) {
     if (name === "rubick-system-feature") {
-      return path.resolve(__static, `../feature/public/preload.js`);
+      return path.resolve(__static, `./renderer/public/preload.js`);
     }
     if (tplPath) {
       return path.resolve(getRelativePath(indexPath), `./`, preload);
@@ -40,7 +41,6 @@ export const runner = () => {
   };
 
   const createView = (plugin, window: BrowserWindow) => {
-    console.log(plugin, 45);
     let pluginIndexPath = plugin.tplPath || plugin.indexPath;
     if (!pluginIndexPath) {
       const pluginPath = path.resolve(baseDir, "node_modules", plugin.name);
@@ -51,6 +51,8 @@ export const runner = () => {
 
     const ses = session.fromPartition("<" + plugin.name + ">");
     ses.setPreloads([`${__static}/preload.js`]);
+    // TODO
+    // plugin 核心点
 
     view = new BrowserView({
       webPreferences: {

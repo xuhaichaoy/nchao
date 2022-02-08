@@ -12,6 +12,9 @@ import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
 
 SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
+interface IWindowDrag {
+  children: React.ReactNode;
+}
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -280,11 +283,27 @@ const Home: NextPage = () => {
   };
 
   const focusInput = () => {
-    // coreSearchInput.current.focus()
+    coreSearchInput.current.focus();
   };
 
   const context = {
     resetFn,
+  };
+
+  const windowMove = (canMove: boolean) => {
+    ipcRenderer.send("window-move-open", canMove);
+  };
+
+  const onMouseDown = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    if (
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLButtonElement ||
+      e.target instanceof HTMLTextAreaElement
+    ) {
+      windowMove(false);
+      return;
+    }
+    windowMove(true);
   };
 
   useEffect(() => {
@@ -329,22 +348,43 @@ const Home: NextPage = () => {
   return (
     <div className={`min-h-[66px] bg-light`}>
       <div
-        className={`flex justify-center border-dark-100 border rounded-lg px-2 ${
+        className={`flex justify-between border-dark-100 border rounded-lg px-2 ${
           styles.coreSearch
         } ${isMarket ? styles.canDrag : ""}`}
         onClick={focusInput}
       >
-        <input
-          ref={coreSearchInput}
-          type="text"
-          placeholder="Hi, mTools"
-          className={`block w-[100%] h-16 focus:outline-none px-2 text-2xl tracking-wider`}
-          value={searchValue}
-          spellCheck={false}
-          onChange={handleSearch}
-          onKeyDown={keyDown}
-          onKeyUp={keyUp}
-        />
+        <div
+          className={`w-[100%] cursor-default`}
+          onClick={focusInput}
+          onMouseDown={onMouseDown}
+          onMouseUp={() => windowMove(false)}
+        >
+          {/* <div
+            contentEditable="true"
+            ref={coreSearchInput}
+            // type="text"
+            placeholder="Hi, mTools"
+            className={`flex justify-start items-center h-16 focus:outline-none px-2 text-2xl tracking-wider cursor-auto`}
+            // value={searchValue}
+            spellCheck={false}
+            onChange={handleSearch}
+            onKeyDown={keyDown}
+            onKeyUp={keyUp}>
+            {searchValue}
+          </div> */}
+
+          <input
+            ref={coreSearchInput}
+            type="text"
+            placeholder="Hi, mTools"
+            className={`block h-16 focus:outline-none px-2 text-2xl tracking-wider`}
+            value={searchValue}
+            spellCheck={false}
+            onChange={handleSearch}
+            onKeyDown={keyDown}
+            onKeyUp={keyUp}
+          />
+        </div>
         <div className={`flex items-center w-px-10px w-[50px]`}>
           <img
             className={`rounded-md ${

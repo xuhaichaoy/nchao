@@ -1,11 +1,15 @@
 import { BrowserWindow } from "electron";
-import { ipcMain, shell } from "electron";
+import { ipcMain, shell, screen } from "electron";
 import { readAllRows } from "../core/db/sqlite";
 import { execSync } from "child_process";
 import { runner, detach } from "../browsers";
 import pluginClickEvent from "../core/plugin/clickplugin";
 
 const runnerInstance = runner();
+
+let winStartPosition = { x: 0, y: 0 };
+let mouseStartPosition = { x: 0, y: 0 };
+let movingInterval = null;
 
 export const handleIpc = (win: BrowserWindow) => {
   ipcMain.on("handleSearchValue", async (event, arg) => {
@@ -23,6 +27,27 @@ export const handleIpc = (win: BrowserWindow) => {
   ipcMain.on("handleOpenVlaue", async (_event, arg) => {
     if (arg.pluginType === "app") {
       execSync(arg.action);
+    }
+  });
+
+  ipcMain.on("window-move-open", (_events, canMoving) => {
+    console.log(canMoving);
+    if (canMoving) {
+      const winPosition = win.getPosition();
+      winStartPosition = { x: winPosition[0], y: winPosition[1] };
+      mouseStartPosition = screen.getCursorScreenPoint();
+      if (movingInterval) {
+        clearInterval(movingInterval);
+      }
+      movingInterval = setInterval(() => {
+        const cursorPosition = screen.getCursorScreenPoint();
+        const x = winStartPosition.x + cursorPosition.x - mouseStartPosition.x;
+        const y = winStartPosition.y + cursorPosition.y - mouseStartPosition.y;
+        win.setPosition(x, y, true);
+      }, 0);
+    } else {
+      clearInterval(movingInterval);
+      movingInterval = null;
     }
   });
 

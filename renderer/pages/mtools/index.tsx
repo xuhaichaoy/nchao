@@ -12,9 +12,9 @@ import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
 
 SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
-interface IWindowDrag {
-  children: React.ReactNode;
-}
+// interface IWindowDrag {
+//   children: React.ReactNode;
+// }
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -63,6 +63,7 @@ const Home: NextPage = () => {
     setIsMarket(false);
     setSearchValue("");
     setArrData([]);
+    coreSearchInput.current.innerText = "";
     ipcRenderer.send("setWindowSize", 66);
     coreSearchInput.current?.focus();
   };
@@ -140,12 +141,17 @@ const Home: NextPage = () => {
   };
 
   const handleClick = (item) => {
+    if (!item) {
+      return;
+    }
+    coreSearchInput.current.innerText = "";
     setSearchValue("");
     setArrData([]);
     if (item.pluginType === "app") {
       // 打开app
       setTimeout(() => {
         ipcRenderer.send("handleOpenVlaue", item);
+        ipcRenderer.send("close");
       }, 0);
     } else if (item.pluginType === "ui") {
       // 打开UI
@@ -264,6 +270,8 @@ const Home: NextPage = () => {
     if (checkData.type === "home") {
       // 打开插件中心
       setSearchValue("插件市场");
+      coreSearchInput.current.innerText = "插件市场";
+      keepLastIndex();
       setIsMarket(true);
       ipcRenderer.send("setWindowSize", 660);
     }
@@ -319,13 +327,23 @@ const Home: NextPage = () => {
     windowMove(true);
   };
 
+  const keepCurrentIndex = (target) => {
+    if (window.getSelection) {
+      target.focus(); //解决ff不获取焦点无法定位问题
+      var range = window.getSelection(); //创建range
+      // range.selectAllChildren(target); //range 选择obj下所有子内容
+      // range.collapseToEnd(); //光标移至最后
+    }
+  };
+
   const handleInput = ({ target }: any) => {
+    console.log(target.innerText);
     setSearchValue(target.innerText.trim());
     if (!target.innerText) {
       setArrData([]);
       return;
     }
-    keepLastIndex();
+    keepCurrentIndex(target);
     ipcRenderer.send("handleSearchValue", target.innerText);
   };
 
@@ -393,16 +411,13 @@ const Home: NextPage = () => {
             suppressContentEditableWarning
             contentEditable="true"
             ref={coreSearchInput}
-            placeholder="Hi, mTools"
             className={`max-w-[100%] absolute z-0 overflow-x-auto flex justify-start items-center h-[40px] focus:outline-none px-2 text-2xl tracking-wider cursor-auto leading-[40px] pr-[6px] ${styles.searchStyle}`}
             spellCheck={false}
             onChange={handleSearch}
             onInput={handleInput}
             onKeyDown={keyDown}
             onKeyUp={keyUp}
-          >
-            {searchValue}
-          </span>
+          ></span>
 
           {/* <input
             ref={coreSearchInput}

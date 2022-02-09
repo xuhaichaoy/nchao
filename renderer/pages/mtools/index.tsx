@@ -149,7 +149,6 @@ const Home: NextPage = () => {
       }, 0);
     } else if (item.pluginType === "ui") {
       // 打开UI
-      console.log(item, 123123123);
       // if (state.currentPlugin && state.currentPlugin.name === plugin.name) {
       //   return;
       // }
@@ -170,7 +169,6 @@ const Home: NextPage = () => {
       });
     } else if (item.pluginType === "system") {
       // 打开system
-      console.log(item, 3213123);
     }
   };
 
@@ -283,11 +281,23 @@ const Home: NextPage = () => {
   };
 
   const focusInput = () => {
-    coreSearchInput.current.focus();
+    coreSearchInput.current?.focus();
   };
 
   const context = {
     resetFn,
+  };
+
+  const keepLastIndex = () => {
+    if (window.getSelection) {
+      var esrc = coreSearchInput.current;
+      var range = document.createRange();
+      range.selectNodeContents(esrc);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
   };
 
   const windowMove = (canMove: boolean) => {
@@ -298,12 +308,25 @@ const Home: NextPage = () => {
     if (
       e.target instanceof HTMLInputElement ||
       e.target instanceof HTMLButtonElement ||
-      e.target instanceof HTMLTextAreaElement
+      e.target instanceof HTMLTextAreaElement ||
+      e.target instanceof HTMLSpanElement
     ) {
       windowMove(false);
       return;
     }
+
+    keepLastIndex();
     windowMove(true);
+  };
+
+  const handleInput = ({ target }: any) => {
+    setSearchValue(target.innerText.trim());
+    if (!target.innerText) {
+      setArrData([]);
+      return;
+    }
+    keepLastIndex();
+    ipcRenderer.send("handleSearchValue", target.innerText);
   };
 
   useEffect(() => {
@@ -312,7 +335,6 @@ const Home: NextPage = () => {
         swiperInstance.current.slideTo(0, 0, false);
         setCheckValue(0);
         setArrData(arg || []);
-        console.log(arg);
       });
     }
   }, []);
@@ -354,26 +376,35 @@ const Home: NextPage = () => {
         onClick={focusInput}
       >
         <div
-          className={`w-[100%] cursor-default`}
+          className={`w-[calc(100%-60px)] h-16 cursor-default flex justify-start items-center overflow-x-auto pr-[10px] box-border relative`}
           onClick={focusInput}
           onMouseDown={onMouseDown}
           onMouseUp={() => windowMove(false)}
         >
-          {/* <div
+          {searchValue.length > 0 ? (
+            ""
+          ) : (
+            <div className={`px-2 text-2xl tracking-wider absolute z-[-1]`}>
+              Hi, mTools
+            </div>
+          )}
+
+          <span
+            suppressContentEditableWarning
             contentEditable="true"
             ref={coreSearchInput}
-            // type="text"
             placeholder="Hi, mTools"
-            className={`flex justify-start items-center h-16 focus:outline-none px-2 text-2xl tracking-wider cursor-auto`}
-            // value={searchValue}
+            className={`max-w-[100%] absolute z-0 overflow-x-auto flex justify-start items-center h-[40px] focus:outline-none px-2 text-2xl tracking-wider cursor-auto leading-[40px] pr-[6px] ${styles.searchStyle}`}
             spellCheck={false}
             onChange={handleSearch}
+            onInput={handleInput}
             onKeyDown={keyDown}
-            onKeyUp={keyUp}>
+            onKeyUp={keyUp}
+          >
             {searchValue}
-          </div> */}
+          </span>
 
-          <input
+          {/* <input
             ref={coreSearchInput}
             type="text"
             placeholder="Hi, mTools"
@@ -383,7 +414,7 @@ const Home: NextPage = () => {
             onChange={handleSearch}
             onKeyDown={keyDown}
             onKeyUp={keyUp}
-          />
+          /> */}
         </div>
         <div className={`flex items-center w-px-10px w-[50px]`}>
           <img

@@ -36,3 +36,10 @@
   border-radius: 3px;
   background: rgba(92, 110, 130, 0.6);
 }
+
+.searchStyle::-webkit-scrollbar {
+  width: 0 !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: none;
+}

@@ -51,6 +51,7 @@ if (isProd) {
     width: 800,
     height: 66,
     frame: false,
+    titleBarStyle: "customButtonsOnHover",
     fullscreenable: false,
     maximizable: false,
     center: false,

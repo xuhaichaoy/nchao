@@ -1,5 +1,6 @@
 import { Menu, Tray } from "electron";
 import path from "path";
+let appTray = null;
 
 // 隐藏主窗口，并创建托盘，绑定关闭事件
 export const setTray = (app, mainWindow) => {
@@ -18,7 +19,7 @@ export const setTray = (app, mainWindow) => {
   // 设置系统托盘图标
   const iconPath = path.join(__dirname, "./images/icon.ico");
 
-  const appTray = new Tray(iconPath);
+  appTray = new Tray(iconPath);
 
   // 图标的上下文菜单
   const contextMenu = Menu.buildFromTemplate(trayMenuTemplate);

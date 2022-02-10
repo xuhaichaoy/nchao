@@ -70,6 +70,7 @@ const Home: NextPage = () => {
     setIsMarket(false);
     setSearchValue("");
     setArrData([]);
+    setItemHeight(66);
     ipcRenderer.send("setWindowSize", 66);
     coreSearchInput.current?.focus();
   };
@@ -278,6 +279,7 @@ const Home: NextPage = () => {
       // 打开插件中心
       setSearchValue(marketName);
       setIsMarket(true);
+      setItemHeight(660);
       ipcRenderer.send("setWindowSize", 660);
     }
   };

@@ -68,7 +68,8 @@ export const delTable = () => {
 
 export const readAllRows = (query, params = []) => {
   return new Promise(function (resolve, reject) {
-    db.all(query, (params = []), function (err, row) {
+    db.all(query, (params = []), function (_err, row) {
+      // console.log(query, row);
       resolve(row);
     });
   });

@@ -11,10 +11,9 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
 
+const marketName = "插件市场";
+
 SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
-// interface IWindowDrag {
-//   children: React.ReactNode;
-// }
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -42,10 +41,18 @@ const Home: NextPage = () => {
 
   const coreSearchInput = useRef<any>(null);
 
+  const coreSearchSpan = useRef<any>(null);
+
   const [isMarket, setIsMarket] = useState(false);
 
   const handleSearch = ({ target }: any) => {
+    if (isMarket && target.value.length < marketName.length) {
+      resetFn();
+      return;
+    }
+
     setSearchValue(target.value.trim());
+
     if (!target.value) {
       setArrData([]);
       return;
@@ -55,7 +62,6 @@ const Home: NextPage = () => {
 
   const resetFn = () => {
     if (!searchValue) {
-      // TODO
       // 关闭窗口
       ipcRenderer.send("close");
       return;
@@ -63,7 +69,6 @@ const Home: NextPage = () => {
     setIsMarket(false);
     setSearchValue("");
     setArrData([]);
-    coreSearchInput.current.innerText = "";
     ipcRenderer.send("setWindowSize", 66);
     coreSearchInput.current?.focus();
   };
@@ -144,12 +149,13 @@ const Home: NextPage = () => {
     if (!item) {
       return;
     }
-    coreSearchInput.current.innerText = "";
     setSearchValue("");
     setArrData([]);
+
     if (item.pluginType === "app") {
       // 打开app
       setTimeout(() => {
+        console.log(item);
         ipcRenderer.send("handleOpenVlaue", item);
         ipcRenderer.send("close");
       }, 0);
@@ -269,9 +275,7 @@ const Home: NextPage = () => {
   const openPluginCenter = () => {
     if (checkData.type === "home") {
       // 打开插件中心
-      setSearchValue("插件市场");
-      coreSearchInput.current.innerText = "插件市场";
-      keepLastIndex();
+      setSearchValue(marketName);
       setIsMarket(true);
       ipcRenderer.send("setWindowSize", 660);
     }
@@ -296,18 +300,6 @@ const Home: NextPage = () => {
     resetFn,
   };
 
-  const keepLastIndex = () => {
-    if (window.getSelection) {
-      var esrc = coreSearchInput.current;
-      var range = document.createRange();
-      range.selectNodeContents(esrc);
-      range.collapse(false);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  };
-
   const windowMove = (canMove: boolean) => {
     ipcRenderer.send("window-move-open", canMove);
   };
@@ -323,28 +315,7 @@ const Home: NextPage = () => {
       return;
     }
 
-    keepLastIndex();
     windowMove(true);
-  };
-
-  const keepCurrentIndex = (target) => {
-    if (window.getSelection) {
-      target.focus(); //解决ff不获取焦点无法定位问题
-      var range = window.getSelection(); //创建range
-      // range.selectAllChildren(target); //range 选择obj下所有子内容
-      // range.collapseToEnd(); //光标移至最后
-    }
-  };
-
-  const handleInput = ({ target }: any) => {
-    console.log(target.innerText);
-    setSearchValue(target.innerText.trim());
-    if (!target.innerText) {
-      setArrData([]);
-      return;
-    }
-    keepCurrentIndex(target);
-    ipcRenderer.send("handleSearchValue", target.innerText);
   };
 
   useEffect(() => {
@@ -385,6 +356,12 @@ const Home: NextPage = () => {
     setCheckDataFn();
   }, [arrData.length]);
 
+  useEffect(() => {
+    coreSearchInput.current.style.width = `${
+      coreSearchSpan.current.clientWidth + 4
+    }px`;
+  }, [searchValue]);
+
   return (
     <div className={`min-h-[66px] bg-light`}>
       <div
@@ -402,34 +379,32 @@ const Home: NextPage = () => {
           {searchValue.length > 0 ? (
             ""
           ) : (
-            <div className={`px-2 text-2xl tracking-wider absolute z-[-1]`}>
+            <div
+              className={`w-[100%] px-2 text-2xl tracking-wider absolute z-[-1]`}
+            >
               Hi, mTools
             </div>
           )}
 
           <span
-            suppressContentEditableWarning
-            contentEditable="true"
-            ref={coreSearchInput}
-            className={`max-w-[100%] absolute z-0 overflow-x-auto flex justify-start items-center h-[40px] focus:outline-none px-2 text-2xl tracking-wider cursor-auto leading-[40px] pr-[6px] ${styles.searchStyle}`}
+            ref={coreSearchSpan}
+            className={`max-w-[100%] invisible absolute z-[-1px] overflow-x-auto flex justify-start items-center h-[40px] focus:outline-none px-2 text-2xl tracking-wider cursor-auto leading-[40px] pr-[6px] ${styles.searchStyle}`}
             spellCheck={false}
-            onChange={handleSearch}
-            onInput={handleInput}
-            onKeyDown={keyDown}
-            onKeyUp={keyUp}
-          ></span>
+          >
+            {searchValue}
+          </span>
 
-          {/* <input
+          <input
             ref={coreSearchInput}
             type="text"
             placeholder="Hi, mTools"
-            className={`block h-16 focus:outline-none px-2 text-2xl tracking-wider`}
+            className={`max-w-[100%] block h-16 focus:outline-none px-2 text-2xl tracking-wider asdasd`}
             value={searchValue}
             spellCheck={false}
             onChange={handleSearch}
             onKeyDown={keyDown}
             onKeyUp={keyUp}
-          /> */}
+          />
         </div>
         <div className={`flex items-center w-px-10px w-[50px]`}>
           <img

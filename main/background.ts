@@ -57,7 +57,7 @@ if (isProd) {
     delTable();
     insertTable(data);
     insertTable(localPlugin);
-  }, 2000);
+  }, 1000);
 
   console.log(screen);
 

@@ -1,6 +1,6 @@
 import { ipcMain, shell, screen, BrowserWindow } from "electron";
 import { readAllRows } from "../core/db/sqlite";
-import { execSync } from "child_process";
+import { exec } from "child_process";
 import { runner, detach } from "../browsers";
 import pluginClickEvent from "../core/plugin/clickplugin";
 import { setInterval } from "timers";
@@ -13,7 +13,9 @@ let movingInterval = null;
 
 export const handleIpc = (win: BrowserWindow) => {
   ipcMain.on("handleSearchValue", async (event, arg) => {
+    console.log(arg, 1111, "" + arg == "aa", typeof arg);
     if (arg === "aa") {
+      console.log(arg, 2222);
       const sql = `select rowid as id, * from local`;
       const data = await readAllRows(sql);
       event.reply("getSearchValue", data);
@@ -26,7 +28,7 @@ export const handleIpc = (win: BrowserWindow) => {
 
   ipcMain.on("handleOpenVlaue", async (_event, arg) => {
     if (arg.pluginType === "app") {
-      execSync(arg.action);
+      exec(arg.action);
     }
   });
 
@@ -35,17 +37,10 @@ export const handleIpc = (win: BrowserWindow) => {
       const winPosition = win.getPosition();
       winStartPosition = { x: winPosition[0], y: winPosition[1] };
       mouseStartPosition = screen.getCursorScreenPoint();
+
       if (movingInterval) {
         clearInterval(movingInterval);
-        // cancelIdleCallback(movingInterval)
       }
-
-      // movingInterval = requestIdleCallback(() => {
-      //   const cursorPosition = screen.getCursorScreenPoint();
-      //   const x = winStartPosition.x + cursorPosition.x - mouseStartPosition.x;
-      //   const y = winStartPosition.y + cursorPosition.y - mouseStartPosition.y;
-      //   win.setPosition(x, y, true);
-      // })
 
       movingInterval = setInterval(() => {
         const cursorPosition = screen.getCursorScreenPoint();
@@ -54,7 +49,6 @@ export const handleIpc = (win: BrowserWindow) => {
         win.setPosition(x, y, true);
       }, 0);
     } else {
-      // cancelIdleCallback(movingInterval)
       clearInterval(movingInterval);
       movingInterval = null;
     }

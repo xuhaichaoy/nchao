@@ -26,12 +26,8 @@ if (isProd) {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
-  console.log(width, height);
-
   let data = await fileLists();
   let localPlugin = [];
-
-  log.info(data);
 
   try {
     localPlugin = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -45,8 +41,6 @@ if (isProd) {
     insertTable(localPlugin);
   }, 1000);
 
-  console.log(screen);
-
   const mainWindow = createWindow("main", {
     width: 800,
     height: 66,
@@ -57,8 +51,8 @@ if (isProd) {
     center: false,
     resizable: false,
     backgroundColor: "transparent",
-    x: width / 2 - 400,
-    y: height / 2 - 333,
+    x: Math.ceil(width / 2 - 400),
+    y: Math.ceil(height / 2 - 333),
     show: false,
     webPreferences: {
       webSecurity: false,

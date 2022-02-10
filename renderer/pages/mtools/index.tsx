@@ -19,6 +19,7 @@ const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [arrData, setArrData] = useState<searchItem[]>([]);
   const [checkValue, setCheckValue] = useState(0);
+  const [itemHeight, setItemHeight] = useState(0);
   const [altKey, setAltKey] = useState(false);
   const scrollItem = useRef<any>(null);
   const swiperInstance = useRef<any>(null);
@@ -301,7 +302,10 @@ const Home: NextPage = () => {
   };
 
   const windowMove = (canMove: boolean) => {
-    ipcRenderer.send("window-move-open", canMove);
+    ipcRenderer.send("window-move-open", {
+      canMove,
+      itemHeight,
+    });
   };
 
   const onMouseDown = (e: React.SyntheticEvent<HTMLDivElement>) => {
@@ -345,13 +349,16 @@ const Home: NextPage = () => {
   }, [checkValue]);
 
   useEffect(() => {
+    let currentHeight = 0;
     if (arrData.length >= 10) {
-      ipcRenderer.send("setWindowSize", 660);
+      currentHeight = 660;
     } else if (arrData.length > 0) {
-      ipcRenderer.send("setWindowSize", arrData.length * 60 + 62);
+      currentHeight = arrData.length * 60 + 62;
     } else {
-      ipcRenderer.send("setWindowSize", 66);
+      currentHeight = 66;
     }
+    setItemHeight(currentHeight);
+    ipcRenderer.send("setWindowSize", currentHeight);
 
     setCheckDataFn();
   }, [arrData.length]);

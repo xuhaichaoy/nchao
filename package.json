@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "my-nextron-app",
-  "description": "My application description",
+  "name": "chao",
+  "description": "tools",
   "version": "1.0.0",
   "main": "app/background.js",
   "scripts": {

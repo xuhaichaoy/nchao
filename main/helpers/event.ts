@@ -30,27 +30,38 @@ export const handleIpc = (win: BrowserWindow) => {
     }
   });
 
-  ipcMain.on("window-move-open", (_events, canMoving) => {
-    if (canMoving) {
-      const winPosition = win.getPosition();
-      winStartPosition = { x: winPosition[0], y: winPosition[1] };
-      mouseStartPosition = screen.getCursorScreenPoint();
+  /**
+   * setPosition 不能直接使用
+   * 详解: https://github.com/electron/electron/issues/27959
+   */
 
-      if (movingInterval) {
+  ipcMain.on(
+    "window-move-open",
+    (_events, { canMove: canMoving, itemHeight: height }) => {
+      if (canMoving) {
+        const winPosition = win.getPosition();
+        winStartPosition = { x: winPosition[0], y: winPosition[1] };
+        mouseStartPosition = screen.getCursorScreenPoint();
+
+        if (movingInterval) {
+          clearInterval(movingInterval);
+        }
+
+        movingInterval = setInterval(() => {
+          const cursorPosition = screen.getCursorScreenPoint();
+          const x =
+            winStartPosition.x + cursorPosition.x - mouseStartPosition.x;
+          const y =
+            winStartPosition.y + cursorPosition.y - mouseStartPosition.y;
+
+          win.setBounds({ x, y, width: 800, height }, true);
+        }, 10);
+      } else {
         clearInterval(movingInterval);
+        movingInterval = null;
       }
-
-      movingInterval = setInterval(() => {
-        const cursorPosition = screen.getCursorScreenPoint();
-        const x = winStartPosition.x + cursorPosition.x - mouseStartPosition.x;
-        const y = winStartPosition.y + cursorPosition.y - mouseStartPosition.y;
-        win.setPosition(x, y, true);
-      }, 0);
-    } else {
-      clearInterval(movingInterval);
-      movingInterval = null;
     }
-  });
+  );
 
   ipcMain.on("MainProgress", function (e, argMsg) {
     console.log(argMsg);

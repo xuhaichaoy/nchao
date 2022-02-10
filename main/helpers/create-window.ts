@@ -3,8 +3,6 @@ import {
   screen,
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  Menu,
-  Tray,
 } from "electron";
 import Store from "electron-store";
 import "./event";
@@ -74,7 +72,6 @@ export default (
   };
 
   state = ensureVisibleOnSomeDisplay(restore());
-  // console.log(state);
 
   const browserOptions: BrowserWindowConstructorOptions = {
     ...options,
@@ -84,6 +81,7 @@ export default (
       ...options.webPreferences,
     },
   };
+
   win = new BrowserWindow(browserOptions);
 
   handleIpc(win);

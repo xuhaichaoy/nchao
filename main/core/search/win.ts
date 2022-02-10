@@ -125,6 +125,6 @@ function fileDisplay(filePath) {
 export default () => {
   fileDisplay(filePath);
   fileDisplay(startMenu);
-  // fileDisplay(LocalData);
+
   return fileLists;
 };

@@ -7,29 +7,13 @@ import { setTray } from "./helpers/api/index";
 import { localdatafile } from "../utils/getLocalDataFile";
 import path from "path";
 import fs from "fs";
+import log from "electron-log";
+
 // declare const __static: string;
 
 const configPath = path.join(localdatafile(), "./mynextron-plugin.json");
 
 const isProd: boolean = process.env.NODE_ENV === "production";
-
-const formatReg = (regStr) => {
-  const flags = regStr.replace(/.*\/([gimy]*)$/, "$1");
-  const pattern = flags.replace(new RegExp("^/(.*?)/" + flags + "$"), "$1");
-  return new RegExp(pattern, flags);
-};
-
-const searchKeyValues = (lists, value, strict = false) => {
-  return lists.filter((item) => {
-    if (typeof item === "string") {
-      return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
-    }
-    if (item.type === "regex" && !strict) {
-      return formatReg(item.match).test(value);
-    }
-    return false;
-  });
-};
 
 if (isProd) {
   serve({ directory: "app" });
@@ -46,6 +30,8 @@ if (isProd) {
 
   let data = await fileLists();
   let localPlugin = [];
+
+  log.info(data);
 
   try {
     localPlugin = JSON.parse(fs.readFileSync(configPath, "utf-8"));

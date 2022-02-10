@@ -13,9 +13,7 @@ let movingInterval = null;
 
 export const handleIpc = (win: BrowserWindow) => {
   ipcMain.on("handleSearchValue", async (event, arg) => {
-    console.log(arg, 1111, "" + arg == "aa", typeof arg);
-    if (arg === "aa") {
-      console.log(arg, 2222);
+    if (arg === "chao") {
       const sql = `select rowid as id, * from local`;
       const data = await readAllRows(sql);
       event.reply("getSearchValue", data);

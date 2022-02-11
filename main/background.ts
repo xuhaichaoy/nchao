@@ -7,7 +7,6 @@ import { setTray } from "./helpers/api/index";
 import { localdatafile } from "../utils/getLocalDataFile";
 import path from "path";
 import fs from "fs";
-import log from "electron-log";
 
 // declare const __static: string;
 
@@ -39,7 +38,7 @@ if (isProd) {
     delTable();
     insertTable(data);
     insertTable(localPlugin);
-  }, 1000);
+  }, 2000);
 
   const mainWindow = createWindow("main", {
     width: 800,
@@ -63,18 +62,25 @@ if (isProd) {
 
   if (isProd) {
     await mainWindow.loadURL("app://./home.html");
+    mainWindow.webContents.closeDevTools();
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
-    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools({ mode: "detach" });
   }
   setTray(app, mainWindow);
+
   globalShortcut.register("Alt+W", function () {
     if (mainWindow.isVisible()) {
       mainWindow.hide();
     } else {
       mainWindow.show();
     }
+  });
+
+  app.on("browser-window-blur", () => {
+    // 窗口失焦 隐藏
+    mainWindow.hide();
   });
 })();
 

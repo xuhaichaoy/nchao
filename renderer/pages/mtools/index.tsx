@@ -52,6 +52,10 @@ const Home: NextPage = () => {
       return;
     }
 
+    if (isMarket && target.value.length > marketName.length) {
+      return;
+    }
+
     setSearchValue(target.value.trim());
 
     if (!target.value) {
@@ -407,7 +411,7 @@ const Home: NextPage = () => {
             ref={coreSearchInput}
             type="text"
             placeholder="Hi, mTools"
-            className={`max-w-[100%] block h-16 focus:outline-none px-2 text-2xl tracking-wider asdasd`}
+            className={`max-w-[100%] block h-16 focus:outline-none px-2 text-2xl tracking-wider`}
             value={searchValue}
             spellCheck={false}
             onChange={handleSearch}

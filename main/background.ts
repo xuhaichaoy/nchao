@@ -38,7 +38,7 @@ if (isProd) {
     delTable();
     insertTable(data);
     insertTable(localPlugin);
-  }, 2000);
+  }, 5000);
 
   const mainWindow = createWindow("main", {
     width: 800,

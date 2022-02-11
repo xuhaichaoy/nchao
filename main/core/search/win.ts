@@ -5,6 +5,7 @@ import os from "os";
 import translate from "./translate";
 import { shell } from "electron";
 import fileIcon from "extract-file-icon";
+import ws from "windows-shortcuts";
 
 const filePath = path.resolve(
   "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
@@ -52,7 +53,7 @@ function fileDisplay(filePath) {
     } else {
       files.forEach(function (filename) {
         const filedir = path.join(filePath, filename);
-        fs.stat(filedir, function (eror, stats) {
+        fs.stat(filedir, async (eror, stats) => {
           if (eror) {
             console.warn("获取文件stats失败");
           } else {
@@ -62,55 +63,75 @@ function fileDisplay(filePath) {
               const appName = filename.split(".")[0];
               const keyWords = [appName];
               let appDetail: any = {};
-              try {
-                appDetail = shell.readShortcutLink(filedir);
-              } catch (e) {}
 
-              if (
-                !appDetail.target ||
-                appDetail.target.toLowerCase().indexOf("unin") >= 0 ||
-                appDetail.args
-              )
-                return;
+              let p = new Promise(function (reslove, reject) {
+                try {
+                  appDetail = shell.readShortcutLink(filedir);
+                  reslove(appDetail);
+                } catch (e) {
+                  ws.query(filedir, (_err, b) => {
+                    if (b.target) {
+                      reslove(b);
+                    } else {
+                      reject(b);
+                    }
+                  });
+                }
+              });
 
-              keyWords.push(path.basename(appDetail.target, ".exe"));
+              p.then(
+                (data) => {
+                  appDetail = data;
+                  if (
+                    !appDetail.target ||
+                    appDetail.target.toLowerCase().indexOf("unin") >= 0 ||
+                    appDetail.args
+                  )
+                    return;
 
-              if (isZhRegex.test(appName)) {
-                const py = translate(appName);
-                const pinyinArr = py.split(",");
-                const zh_firstLatter = pinyinArr.map((py) => py[0]);
-                // 拼音
-                keyWords.push(pinyinArr.join(""));
-                // 缩写
-                keyWords.push(zh_firstLatter.join(""));
-              } else {
-                const firstLatter = appName
-                  .split(" ")
-                  .map((name) => name[0])
-                  .join("");
-                keyWords.push(firstLatter);
-              }
+                  keyWords.push(path.basename(appDetail.target, ".exe"));
 
-              const icon = path.join(
-                os.tmpdir(),
-                "ProcessIcon",
-                `${encodeURIComponent(appName)}.png`
+                  if (isZhRegex.test(appName)) {
+                    const py = translate(appName);
+                    const pinyinArr = py.split(",");
+                    const zh_firstLatter = pinyinArr.map((py) => py[0]);
+                    // 拼音
+                    keyWords.push(pinyinArr.join(""));
+                    // 缩写
+                    keyWords.push(zh_firstLatter.join(""));
+                  } else {
+                    const firstLatter = appName
+                      .split(" ")
+                      .map((name) => name[0])
+                      .join("");
+                    keyWords.push(firstLatter);
+                  }
+
+                  const icon = path.join(
+                    os.tmpdir(),
+                    "ProcessIcon",
+                    `${encodeURIComponent(appName)}.png`
+                  );
+
+                  const appInfo = {
+                    value: "plugin",
+                    desc: appDetail.target,
+                    type: "app",
+                    icon,
+                    pluginType: "app",
+                    action: `start "dummyclient" "${appDetail.target}"`,
+                    keyWords: keyWords,
+                    name: appName,
+                    names: JSON.parse(JSON.stringify(keyWords)),
+                  };
+
+                  fileLists.push(appInfo);
+                  getico(appInfo);
+                },
+                (err) => {
+                  // console.log("失败" + err);
+                }
               );
-
-              const appInfo = {
-                value: "plugin",
-                desc: appDetail.target,
-                type: "app",
-                icon,
-                pluginType: "app",
-                action: `start "dummyclient" "${appDetail.target}"`,
-                keyWords: keyWords,
-                name: appName,
-                names: JSON.parse(JSON.stringify(keyWords)),
-              };
-
-              fileLists.push(appInfo);
-              getico(appInfo);
             }
             if (isDir) {
               fileDisplay(filedir); // 递归，如果是文件夹，就继续遍历该文件夹下面的文件

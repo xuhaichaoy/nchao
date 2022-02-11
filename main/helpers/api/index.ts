@@ -28,7 +28,7 @@ export const setTray = (app, mainWindow) => {
   mainWindow.show();
 
   // 设置托盘悬浮提示
-  appTray.setToolTip("never forget");
+  appTray.setToolTip("chao");
 
   // 设置托盘菜单
   appTray.setContextMenu(contextMenu);

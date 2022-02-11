@@ -375,10 +375,18 @@ const Home: NextPage = () => {
     }px`;
   }, [searchValue]);
 
+  useEffect(() => {
+    ipcRenderer.on("onfocus", (_event, arg) => {
+      if (arg) {
+        coreSearchInput.current?.focus();
+      }
+    });
+  }, []);
+
   return (
-    <div className={`min-h-[66px] bg-light`}>
+    <div className={`min-h-[66px]`}>
       <div
-        className={`flex justify-between border-dark-100 border rounded-lg px-2 ${
+        className={`flex justify-between border-dark-100 border rounded-lg bg-light-50 px-2 ${
           styles.coreSearch
         } ${isMarket ? styles.canDrag : ""}`}
         onClick={focusInput}
@@ -386,6 +394,7 @@ const Home: NextPage = () => {
         <div
           className={`w-[calc(100%-60px)] h-16 cursor-default flex justify-start items-center overflow-x-auto pr-[10px] box-border relative`}
           onClick={focusInput}
+          onContextMenu={focusInput}
           onMouseDown={onMouseDown}
           onMouseUp={() => windowMove(false)}
         >
@@ -393,7 +402,7 @@ const Home: NextPage = () => {
             ""
           ) : (
             <div
-              className={`w-[100%] px-2 text-2xl tracking-wider absolute z-[-1]`}
+              className={`w-[100%] px-2 text-2xl tracking-wider absolute z-[-1] text-gray-500`}
             >
               Hi, mTools
             </div>
@@ -426,6 +435,7 @@ const Home: NextPage = () => {
             }`}
             src={searchIcon()}
             onClick={openPluginCenter}
+            onContextMenu={openPluginCenter}
             width={50}
             height={50}
             alt="icon"

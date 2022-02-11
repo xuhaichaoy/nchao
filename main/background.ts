@@ -48,10 +48,11 @@ if (isProd) {
     fullscreenable: false,
     maximizable: false,
     center: false,
+    opacity: 0,
     resizable: false,
     backgroundColor: "transparent",
     x: Math.ceil(width / 2 - 400),
-    y: Math.ceil(height / 2 - 333),
+    y: Math.ceil(height / 2 - 233),
     show: false,
     webPreferences: {
       webSecurity: false,
@@ -72,14 +73,16 @@ if (isProd) {
 
   globalShortcut.register("Alt+W", function () {
     if (mainWindow.isVisible()) {
+      mainWindow.setOpacity(0);
       mainWindow.hide();
     } else {
+      mainWindow.setOpacity(1);
       mainWindow.show();
+      mainWindow.webContents.send("onfocus", true);
     }
   });
 
   app.on("browser-window-blur", () => {
-    // 窗口失焦 隐藏
     mainWindow.hide();
   });
 })();

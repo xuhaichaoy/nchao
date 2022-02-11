@@ -3,6 +3,8 @@
   "name": "chao",
   "description": "tools",
   "version": "1.0.0",
+  "author": "haichao",
+  "license": "MIT",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron --run-only",

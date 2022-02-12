@@ -83,7 +83,9 @@ if (isProd) {
   });
 
   app.on("browser-window-blur", () => {
-    mainWindow.hide();
+    if (isProd) {
+      mainWindow.hide();
+    }
   });
 })();
 

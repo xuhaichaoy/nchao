@@ -3,17 +3,11 @@ import type { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
 import type { searchItem } from "../../type/mtools/index";
 import { ipcRenderer } from "electron";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { MarketContext } from "../../component/mtools/marketContext";
-import SwiperCore, { Mousewheel, Scrollbar, Keyboard } from "swiper";
 import Market from "../../component/mtools/pluginCenter";
-import "swiper/css";
-import "swiper/css/scrollbar";
 import styles from "../../styles/mtools/index.module.scss";
 
 const marketName = "插件市场";
-
-SwiperCore.use([Mousewheel, Scrollbar, Keyboard]);
 
 const Home: NextPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -22,8 +16,6 @@ const Home: NextPage = () => {
   const [itemHeight, setItemHeight] = useState(0);
   const [altKey, setAltKey] = useState(false);
   const scrollItem = useRef<any>(null);
-  const swiperInstance = useRef<any>(null);
-  const [scrollLock, setScrollLock] = useState(false);
   const [checkData, setCheckData] = useState<searchItem>({
     id: 0,
     tips: "",
@@ -40,9 +32,15 @@ const Home: NextPage = () => {
     value: "",
   });
 
+  const [initPosition, setInitPosition] = useState(0);
+
+  const [firstCurrent, setFirstCurrent] = useState(0);
+
   const coreSearchInput = useRef<any>(null);
 
   const coreSearchSpan = useRef<any>(null);
+
+  const wheelScrollContent = useRef<any>(null);
 
   const [isMarket, setIsMarket] = useState(false);
 
@@ -80,33 +78,82 @@ const Home: NextPage = () => {
   };
 
   const Up = () => {
-    if (checkValue === 0) {
-      if (arrData.length - 1 > 10) {
-        setCheckValue(9);
-      } else {
-        setCheckValue(arrData.length - 1);
-      }
-    } else {
-      setCheckValue((item) => item - 1);
-    }
+    keyScrollFn(1);
   };
 
   const Down = () => {
-    if (checkValue === arrData.length - 1) {
-      setCheckValue(0);
-      swiperInstance.current.slideTo(0, 0, false);
+    keyScrollFn(-1);
+  };
+
+  const keyScrollFn = (direction) => {
+    let lastCheck =
+      firstCurrent + 10 > arrData.length ? arrData.length : firstCurrent + 10;
+
+    let firstCheck = firstCurrent;
+
+    let res = 0;
+
+    let currentCheck = checkValue;
+
+    if (direction > 0) {
+      currentCheck -= 1;
     } else {
-      setCheckValue((item) => item + 1);
+      currentCheck += 1;
+    }
+
+    if (currentCheck + 1 > lastCheck) {
+      if (currentCheck === arrData.length) {
+        currentCheck = 0;
+        res = 0;
+        firstCheck = 0;
+      } else {
+        firstCheck += 1;
+        lastCheck =
+          lastCheck + 1 > arrData.length ? arrData.length : lastCheck + 1;
+        res = initPosition - 60;
+      }
+      setInitPosition(res);
+      wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
+    }
+
+    if (currentCheck < firstCheck) {
+      if (currentCheck < 0) {
+        setCheckValue(lastCheck - 1);
+        return;
+      } else {
+        firstCheck -= 1;
+        lastCheck -= 1;
+        res = initPosition + 60;
+        setInitPosition(res);
+        wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
+      }
+    }
+    setFirstCurrent(firstCheck);
+    setCheckValue(currentCheck);
+  };
+
+  const keyOpenApp = (num = 0) => {
+    let check = (!num ? 10 : num) + firstCurrent;
+
+    if (arrData.length >= check) {
+      handleClick(arrData[check - 1]);
     }
   };
 
   const keyDown = (e) => {
     const { keyCode, altKey } = e;
+
     if (altKey) {
       e.preventDefault();
       setAltKey(true);
     } else {
       setAltKey(false);
+    }
+
+    if ((altKey && keyCode >= 48) || (altKey && keyCode <= 57)) {
+      // 快捷打开
+      keyOpenApp(keyCode - 48);
+      return;
     }
     switch (keyCode) {
       case 13:
@@ -190,72 +237,6 @@ const Home: NextPage = () => {
     }
   };
 
-  const slideChange = (swiper) => {
-    if (scrollLock) {
-      setScrollLock(false);
-      return;
-    }
-    if (checkValue < swiperInstance.current.activeIndex) {
-      setCheckValue(swiper.activeIndex);
-    }
-    if (checkValue >= swiperInstance.current.activeIndex + 10) {
-      setCheckValue(swiper.activeIndex + 9);
-    }
-  };
-
-  const gerenateSearchItem = () => {
-    // TODO 1-0 有问题
-    // swiper 向上滚动不会rerender
-    const activeIndex =
-      (swiperInstance.current && swiperInstance?.current?.activeIndex) || 0;
-
-    return arrData.map((item: any, index: number) => {
-      return (
-        <SwiperSlide key={item.id}>
-          <div
-            ref={checkValue === index ? scrollItem : null}
-            className={`h-[60px] w-[100%] text-left flex px-4 cursor-pointer justify-between items-center  ${
-              checkValue === index ? "bg-gray-300 checked" : ""
-            }`}
-            key={item.id}
-            onClick={() => handleClick(item)}
-          >
-            <div className={`flex justify-left items-center w-[100%]`}>
-              {!altKey ? (
-                <img
-                  className={`rounded-md mr-[6px]`}
-                  src={item.icon || ""}
-                  width={36}
-                  height={36}
-                  alt="icon"
-                />
-              ) : (
-                <div
-                  className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center`}
-                >
-                  {index - activeIndex + 1 >= 1 && index - activeIndex + 1 <= 10
-                    ? index - activeIndex + 1
-                    : ""}
-                </div>
-              )}
-              <div
-                className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
-              >
-                <span className={`flex-shrink-1 w-[100%]`}>{item.name}</span>
-                <span
-                  className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
-                >
-                  {item.desc}
-                </span>
-              </div>
-            </div>
-            <div>{item.tips}</div>
-          </div>
-        </SwiperSlide>
-      );
-    });
-  };
-
   const setCheckDataFn = () => {
     if (arrData[checkValue]) {
       setCheckData(arrData[checkValue]);
@@ -328,31 +309,154 @@ const Home: NextPage = () => {
     windowMove(true);
   };
 
-  useEffect(() => {
-    if (swiperInstance.current) {
-      ipcRenderer.on("getSearchValue", (_event, arg) => {
-        swiperInstance.current.slideTo(0, 0, false);
-        setCheckValue(0);
-        setArrData(arg || []);
-      });
+  const wheelScroll = ({ deltaY }) => {
+    // const maxScrollHeight =
+    //   arrData.length - 10 > 0 ? (arrData.length - 10) * 60 : 0;
+
+    // let res = 0;
+
+    // let lastCheck =
+    //   firstCurrent + 10 > arrData.length ? arrData.length : firstCurrent + 10;
+
+    // let firstCheck = firstCurrent;
+
+    // if (deltaY > 0) {
+    //   if (initPosition === -maxScrollHeight) {
+    //     return;
+    //   }
+    //   res = initPosition - 60;
+    //   firstCheck += 1;
+    //   lastCheck =
+    //     lastCheck + 1 > arrData.length ? arrData.length : lastCheck + 1;
+    // } else {
+    //   if (initPosition === 0) {
+    //     return;
+    //   }
+    //   res = initPosition + 60;
+    //   firstCheck -= 1;
+    //   lastCheck = lastCheck - 1;
+    // }
+    // setFirstCurrent(firstCheck);
+
+    // if (checkValue < firstCheck) {
+    //   setCheckValue(checkValue + 1);
+    // }
+
+    // if (checkValue >= lastCheck) {
+    //   setCheckValue(checkValue - 1);
+    // }
+
+    // setInitPosition(res);
+
+    // wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
+
+    whellScrollFn(deltaY);
+  };
+
+  const whellScrollFn = (direction) => {
+    const maxScrollHeight =
+      arrData.length - 10 > 0 ? (arrData.length - 10) * 60 : 0;
+
+    let res = 0;
+
+    let lastCheck =
+      firstCurrent + 10 > arrData.length ? arrData.length : firstCurrent + 10;
+
+    let firstCheck = firstCurrent;
+
+    if (direction > 0) {
+      if (initPosition === -maxScrollHeight) {
+        return;
+      }
+      res = initPosition - 60;
+      firstCheck += 1;
+      lastCheck =
+        lastCheck + 1 > arrData.length ? arrData.length : lastCheck + 1;
+    } else {
+      if (initPosition === 0) {
+        return;
+      }
+      res = initPosition + 60;
+      firstCheck -= 1;
+      lastCheck = lastCheck - 1;
     }
+    setFirstCurrent(firstCheck);
+
+    if (checkValue < firstCheck) {
+      setCheckValue(checkValue + 1);
+    }
+
+    if (checkValue >= lastCheck) {
+      setCheckValue(checkValue - 1);
+    }
+
+    setInitPosition(res);
+
+    wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
+  };
+
+  const gerenateSearchItem = () => {
+    const activeIndex = 0;
+
+    return arrData.map((item: any, index: number) => {
+      return (
+        <div
+          ref={checkValue === index ? scrollItem : null}
+          className={`h-[60px] w-[100%] text-left flex px-4 cursor-pointer justify-between items-center  ${
+            checkValue === index ? "bg-gray-300 checked" : ""
+          }`}
+          key={item.id}
+          onClick={() => handleClick(item)}
+        >
+          <div className={`flex justify-left items-center w-[100%] relative`}>
+            <img
+              className={`rounded-md mr-[6px]`}
+              src={item.icon || ""}
+              width={36}
+              height={36}
+              alt="icon"
+            />
+
+            {altKey ? (
+              <div
+                className={`rounded-md mr-[6px] w-[36px] h-[36px] leading-[36px] text-center flex-shrink-0 absolute bg-opacity-80 bg-light-900`}
+              >
+                {index - firstCurrent + 1 >= 1 && index - firstCurrent + 1 <= 10
+                  ? index - firstCurrent + 1 === 10
+                    ? 0
+                    : index - firstCurrent + 1
+                  : ""}
+              </div>
+            ) : (
+              ""
+            )}
+
+            <div
+              className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
+            >
+              <span className={`flex-shrink-1 w-[100%]`}>{item.name}</span>
+              <span
+                className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
+              >
+                {item.desc}
+              </span>
+            </div>
+          </div>
+          <div>{item.tips}</div>
+        </div>
+      );
+    });
+  };
+
+  useEffect(() => {
+    ipcRenderer.on("getSearchValue", (_event, arg) => {
+      setInitPosition(0);
+      wheelScrollContent.current.style.transform = `translate(0px, ${0}px)`;
+      setFirstCurrent(0);
+      setCheckValue(0);
+      setArrData(arg || []);
+    });
   }, []);
-
-  useEffect(() => {
-    if (swiperInstance.current) {
-      if (checkValue > swiperInstance.current.activeIndex + 9) {
-        setScrollLock(true);
-        swiperInstance.current.slideNext();
-      }
-
-      if (checkValue < swiperInstance.current.activeIndex) {
-        setScrollLock(true);
-        swiperInstance.current.slidePrev();
-      }
-
-      setCheckDataFn();
-    }
-  }, [checkValue]);
 
   useEffect(() => {
     let currentHeight = 0;
@@ -449,26 +553,15 @@ const Home: NextPage = () => {
         </MarketContext.Provider>
       ) : (
         <div
-          className={`bg-gray-100 rounded-b-lg max-h-[600px] mt-[-5px] overflow-auto ${styles.scrollContent}`}
+          className={`bg-gray-100 rounded-b-lg max-h-[600px] mt-[-5px] overflow-hidden relative z-1 ${styles.scrollContent}`}
         >
-          <Swiper
-            className={`swiper-no-swiping`}
-            onSlideChange={slideChange}
-            scrollbar={{ draggable: false, dragSize: 50 }}
-            speed={0}
-            keyboard={{
-              enabled: true,
-              onlyInViewport: false,
-            }}
-            slidesPerView={10}
-            onSwiper={(swiper) => {
-              swiperInstance.current = swiper;
-            }}
-            direction={"vertical"}
-            mousewheel={true}
+          <div
+            onWheel={wheelScroll}
+            ref={wheelScrollContent}
+            className={`transform-gpu`}
           >
             {gerenateSearchItem()}
-          </Swiper>
+          </div>
         </div>
       )}
     </div>

@@ -87,7 +87,8 @@ export default (
   handleIpc(win);
 
   win.once("ready-to-show", () => {
-    win.show();
+    win.setSkipTaskbar(true);
+    win.hide();
   });
 
   win.on("close", saveState);

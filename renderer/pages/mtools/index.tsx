@@ -395,9 +395,32 @@ const Home: NextPage = () => {
     wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
   };
 
-  const gerenateSearchItem = () => {
-    const activeIndex = 0;
+  const isEmptyObject = (obj) => {
+    for (var n in obj) {
+      return false;
+    }
+    return true;
+  };
 
+  const getBracketStr = (text) => {
+    let regex = /\[(.+?)\]/g;
+    let options = text.match(regex);
+
+    options?.map((item) => {
+      text = text.replace(item, `<i>${item.substring(1, item.length - 1)}</i>`);
+      console.log(text);
+    });
+
+    return text;
+  };
+
+  const handleLighting = ({ info, name }) => {
+    let words = info.split(",")[0];
+    // getBracketStr(words)
+    return name;
+  };
+
+  const gerenateSearchItem = () => {
     return arrData.map((item: any, index: number) => {
       return (
         <div
@@ -434,7 +457,11 @@ const Home: NextPage = () => {
             <div
               className={`mx-2 text-xl flex justify-center items-center flex-wrap`}
             >
-              <span className={`flex-shrink-1 w-[100%]`}>{item.name}</span>
+              <span
+                className={`flex-shrink-1 w-[100%] ${styles.searchItemName}`}
+              >
+                {handleLighting(item)}
+              </span>
               <span
                 className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
               >
@@ -471,6 +498,7 @@ const Home: NextPage = () => {
     ipcRenderer.send("setWindowSize", currentHeight);
 
     setCheckDataFn();
+    console.log(arrData);
   }, [arrData.length]);
 
   useEffect(() => {

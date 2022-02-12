@@ -1,18 +1,21 @@
-import { app, screen, globalShortcut } from "electron";
+import { app, screen, globalShortcut, nativeImage } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import { insertTable, delTable } from "./core/db/sqlite";
 import fileLists from "./core/search/win";
+import getAppIcon from "./core/search/mac";
 import { setTray } from "./helpers/api/index";
 import { localdatafile } from "../utils/getLocalDataFile";
 import path from "path";
 import fs from "fs";
 
-// declare const __static: string;
-
 const configPath = path.join(localdatafile(), "./mynextron-plugin.json");
 
 const isProd: boolean = process.env.NODE_ENV === "production";
+
+const darwin: boolean = process.platform === "darwin";
+
+const window: boolean = process.platform === "win32";
 
 if (isProd) {
   serve({ directory: "app" });
@@ -25,8 +28,18 @@ if (isProd) {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
-  let data = await fileLists();
+  let data = [];
   let localPlugin = [];
+  if (window) {
+    data = await fileLists();
+  }else if(darwin) {
+    data = await getAppIcon(nativeImage);
+
+    setTimeout(() => {
+      // console.log(data)
+    }, 8000);
+    
+  }
 
   try {
     localPlugin = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -72,6 +85,18 @@ if (isProd) {
   setTray(app, mainWindow);
 
   globalShortcut.register("Alt+W", function () {
+    if (mainWindow.isVisible()) {
+      mainWindow.setOpacity(0);
+      mainWindow.hide();
+    } else {
+      mainWindow.setOpacity(1);
+      mainWindow.show();
+      mainWindow.webContents.send("onfocus", true);
+    }
+  });
+
+
+  globalShortcut.register("Command+W", function () {
     if (mainWindow.isVisible()) {
       mainWindow.setOpacity(0);
       mainWindow.hide();

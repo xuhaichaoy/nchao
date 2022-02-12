@@ -3,10 +3,17 @@ import path from "path";
 import process from "process";
 const sqlite3 = sqlite.verbose();
 
+const window: boolean = process.platform === "win32";
+const darwin: boolean = process.platform === "darwin";
+
 const createTable = () => {
   db.serialize(function () {
-    let ext_path: any = path.resolve("./lib/");
-    console.log(ext_path);
+    let ext_path: any = '';
+    if(window) {
+      ext_path =path.resolve("./lib/");
+    }else if (darwin) {
+      ext_path =path.resolve("./libsimple-osx/");
+    }
     if (argv("ext_path")) {
       ext_path = argv("ext_path");
     }

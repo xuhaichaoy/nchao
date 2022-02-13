@@ -33,6 +33,7 @@ async function getAppIcon(
     const existsnone = fs.existsSync(iconnone);
     if (exists) return true;
     if (existsnone) return false;
+    
     const appName: string = appPath.split("/").pop() || "";
     const extname: string = path.extname(appName);
     const appSubStr: string = appName.split(extname)[0];
@@ -79,8 +80,11 @@ async function getAppIcon(
       // todo
     });
 
+    // console.log(11313123)
+
     return true;
   } catch (e) {
+    console.log(e)
     return false;
   }
 }
@@ -93,21 +97,23 @@ export default async (nativeImage: any) => {
     return extname === ".app" || extname === ".prefPane";
   });
 
-  for (const app of apps) {
-    if (await getAppIcon(app.path, nativeImage, app._name)) {
-      app.icon =
-        "image://" +
-        path.join(
-          os.tmpdir(),
-          "ProcessIcon",
-          `${encodeURIComponent(app._name)}.png`
-        );
-    }
-    // todo getApp size
-  }
+  // for (const app of apps) {
+
+  //   console.log(app.path)
+  //   if (await getAppIcon(app.path, nativeImage, app._name)) {
+  //     app.icon =
+  //       "image://" +
+  //       path.join(
+  //         os.tmpdir(),
+  //         "ProcessIcon",
+  //         `${encodeURIComponent(app._name)}.png`
+  //       );
+  //   }
+  //   // todo getApp size
+  // }
 
   //   apps = apps.filter((app: any) => !!app.icon);
-  console.log(apps);
+  // console.log(apps);
 
   apps = apps.map((app: any) => {
     const appName: any = app.path.split("/").pop();
@@ -142,7 +148,7 @@ export default async (nativeImage: any) => {
     return fileOptions;
   });
 
-  console.log(apps);
+  // console.log(apps);
 
   return apps;
 };

@@ -34,11 +34,6 @@ if (isProd) {
     data = await fileLists();
   }else if(darwin) {
     data = await getAppIcon(nativeImage);
-
-    setTimeout(() => {
-      // console.log(data)
-    }, 8000);
-    
   }
 
   try {
@@ -82,7 +77,10 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools({ mode: "detach" });
   }
+  // TODO
+  // Mac 下 设置托盘图标报错
   setTray(app, mainWindow);
+  
 
   globalShortcut.register("Alt+W", function () {
     if (mainWindow.isVisible()) {
@@ -96,7 +94,7 @@ if (isProd) {
   });
 
 
-  globalShortcut.register("Command+W", function () {
+  globalShortcut.register("CommandOrControl+E", function () {
     if (mainWindow.isVisible()) {
       mainWindow.setOpacity(0);
       mainWindow.hide();
@@ -106,6 +104,8 @@ if (isProd) {
       mainWindow.webContents.send("onfocus", true);
     }
   });
+
+  console.log(globalShortcut.isRegistered('CommandOrControl+E'))
 
   app.on("browser-window-blur", () => {
     if (isProd) {

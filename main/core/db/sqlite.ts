@@ -8,12 +8,10 @@ const darwin: boolean = process.platform === "darwin";
 
 const createTable = () => {
   db.serialize(function () {
-    let ext_path: any = '';
-    if(window) {
-      ext_path =path.resolve("./lib/");
-    }else if (darwin) {
-      ext_path =path.resolve("./libsimple-osx/");
-    }
+    let ext_path: any = path.resolve("./lib/");
+
+    console.log(ext_path)
+
     if (argv("ext_path")) {
       ext_path = argv("ext_path");
     }

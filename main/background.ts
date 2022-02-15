@@ -26,12 +26,19 @@ if (isProd) {
 
 (async () => {
   await app.whenReady();
+  /**
+   * 开机自启动
+   */
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    openAsHidden: false,
+  });
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
-  const filePath = path.resolve(
-    "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
-  );
+  // const filePath = path.resolve(
+  //   "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
+  // );
 
   // chokidar.watch(filePath).on("all", (event, path) => {
   // TODO 监听变化

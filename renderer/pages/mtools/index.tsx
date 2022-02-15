@@ -395,29 +395,24 @@ const Home: NextPage = () => {
     wheelScrollContent.current.style.transform = `translate(0px, ${res}px)`;
   };
 
-  const isEmptyObject = (obj) => {
-    for (var n in obj) {
-      return false;
-    }
-    return true;
-  };
-
   const getBracketStr = (text) => {
     let regex = /\[(.+?)\]/g;
     let options = text.match(regex);
 
     options?.map((item) => {
       text = text.replace(item, `<i>${item.substring(1, item.length - 1)}</i>`);
-      console.log(text);
     });
 
     return text;
   };
 
   const handleLighting = ({ info, name }) => {
-    let words = info.split(",")[0];
-    // getBracketStr(words)
-    return name;
+    if (!info) {
+      return name;
+    }
+    let words = info?.split(",")[0];
+    const res = getBracketStr(words);
+    return res;
   };
 
   const gerenateSearchItem = () => {
@@ -459,9 +454,8 @@ const Home: NextPage = () => {
             >
               <span
                 className={`flex-shrink-1 w-[100%] ${styles.searchItemName}`}
-              >
-                {handleLighting(item)}
-              </span>
+                dangerouslySetInnerHTML={{ __html: handleLighting(item) }}
+              ></span>
               <span
                 className={`flex-shrink-1 w-[100%] text-xs mt-[2px] text-gray-600`}
               >

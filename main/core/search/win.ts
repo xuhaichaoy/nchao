@@ -129,7 +129,7 @@ function fileDisplay(filePath) {
                   getico(appInfo);
                 },
                 (err) => {
-                  // console.log("失败" + err);
+                  console.log("失败" + err);
                 }
               );
             }

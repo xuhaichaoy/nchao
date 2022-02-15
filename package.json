@@ -51,6 +51,7 @@
     "@commitlint/cli": "^16.0.2",
     "@commitlint/config-conventional": "^16.0.0",
     "antd": "^4.18.5",
+    "chokidar": "^3.5.3",
     "download": "^8.0.0",
     "electron-log": "^4.4.6",
     "electron-serve": "^1.1.0",

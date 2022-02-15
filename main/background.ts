@@ -8,6 +8,7 @@ import { setTray } from "./helpers/api/index";
 import { localdatafile } from "../utils/getLocalDataFile";
 import path from "path";
 import fs from "fs";
+import chokidar from "chokidar";
 
 const configPath = path.join(localdatafile(), "./mynextron-plugin.json");
 
@@ -27,6 +28,15 @@ if (isProd) {
   await app.whenReady();
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
+
+  const filePath = path.resolve(
+    "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
+  );
+
+  // chokidar.watch(filePath).on("all", (event, path) => {
+  // TODO 监听变化
+  //   console.log(event, path);
+  // });
 
   let data = [];
   let localPlugin = [];

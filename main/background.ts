@@ -32,11 +32,12 @@ if (isProd) {
   let localPlugin = [];
   if (window) {
     data = await fileLists();
-  }else if(darwin) {
+  } else if (darwin) {
     data = await getAppIcon(nativeImage);
   }
 
   try {
+    // 插件逻辑
     localPlugin = JSON.parse(fs.readFileSync(configPath, "utf-8"));
   } catch (error) {
     console.log(error);
@@ -80,7 +81,6 @@ if (isProd) {
   // TODO
   // Mac 下 设置托盘图标报错
   setTray(app, mainWindow);
-  
 
   globalShortcut.register("Alt+W", function () {
     if (mainWindow.isVisible()) {
@@ -93,7 +93,6 @@ if (isProd) {
     }
   });
 
-
   globalShortcut.register("CommandOrControl+E", function () {
     if (mainWindow.isVisible()) {
       mainWindow.setOpacity(0);
@@ -105,7 +104,7 @@ if (isProd) {
     }
   });
 
-  console.log(globalShortcut.isRegistered('CommandOrControl+E'))
+  console.log(globalShortcut.isRegistered("CommandOrControl+E"));
 
   app.on("browser-window-blur", () => {
     if (isProd) {

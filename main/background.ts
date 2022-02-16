@@ -76,7 +76,8 @@ if (isProd) {
     center: false,
     opacity: 0,
     resizable: false,
-    backgroundColor: "transparent",
+    backgroundColor: "#00000000",
+    transparent: true,
     x: Math.ceil(width / 2 - 400),
     y: Math.ceil(height / 2 - 233),
     show: false,
@@ -95,18 +96,21 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools({ mode: "detach" });
   }
-  // TODO
-  // Mac 下 设置托盘图标报错
-  setTray(app, mainWindow);
+
+  if (isProd) {
+    setTray(app, mainWindow);
+  }
 
   globalShortcut.register("Alt+W", function () {
     if (mainWindow.isVisible()) {
       mainWindow.setOpacity(0);
       mainWindow.hide();
     } else {
-      mainWindow.setOpacity(1);
       mainWindow.show();
       mainWindow.webContents.send("onfocus", true);
+      setTimeout(() => {
+        mainWindow.setOpacity(1);
+      }, 100);
     }
   });
 

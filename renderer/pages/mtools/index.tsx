@@ -512,7 +512,7 @@ const Home: NextPage = () => {
   return (
     <div className={`min-h-[66px]`}>
       <div
-        className={`flex justify-between border-dark-100 border rounded-lg bg-light-50 px-2 ${
+        className={`flex justify-between border-dark-100 rounded-lg bg-light-50 px-2 ${
           styles.coreSearch
         } ${isMarket ? styles.canDrag : ""}`}
         onClick={focusInput}

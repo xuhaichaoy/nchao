@@ -29,10 +29,7 @@ if (isProd) {
   /**
    * 开机自启动
    */
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    openAsHidden: false,
-  });
+
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
@@ -65,6 +62,13 @@ if (isProd) {
     insertTable(data);
     insertTable(localPlugin);
   }, 5000);
+
+  // TODO
+  // 开机自启存在问题
+  // app.setLoginItemSettings({
+  //   openAtLogin: true,
+  //   openAsHidden: true,
+  // });
 
   const mainWindow = createWindow("main", {
     width: 800,

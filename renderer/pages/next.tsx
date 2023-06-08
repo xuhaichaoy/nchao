@@ -19,7 +19,7 @@ function Next() {
             height={100}
           />
         </div>
-        <span>⚡ Nextro1111n ⚡</span>
+        <span>⚡ Nextro1111n222 ⚡</span>
       </div>
       <div className="mt-1 w-full flex-wrap flex justify-center">
         <Link href="/home">
